@@ -4,7 +4,13 @@
 
 {{readme}}
 
-==========================================================
+## Regenerate `README.md`
+
+The `README.md` file can be regenerated with:
+
+```text
+cargo readme > README.md
+```
 
 ## Code of conduct
 
