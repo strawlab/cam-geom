@@ -1,0 +1,24 @@
+[package]
+name = "cam-geom"
+version = "0.1.0"
+authors = ["Andrew Straw <strawman@astraw.com>"]
+edition = "2018"
+description = "Geometric models of cameras for photogrammetry"
+license = "MIT/Apache-2.0"
+
+[dependencies]
+nalgebra = {version="0.19", default-features=false}
+num-traits = {version="0.2", default-features=false}
+approx = {version="0.3", default-features=false}
+num-iter = {version="0.1.40", default-features=false, optional=true}
+itertools = {version="0.8", default-features=false}
+serde = {version="1.0", default-features=false, features=["derive"], optional=true}
+
+[dev-dependencies]
+serde_json = "1.0"
+
+[features]
+default = ["std"]
+
+std = ["nalgebra/std", "num-traits/std", "num-iter"]
+serde-serialize = ["serde", "nalgebra/serde-serialize"]
