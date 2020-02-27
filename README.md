@@ -72,13 +72,7 @@ The following will fail if a std dependency is present:
 cargo build --no-default-features --target thumbv7em-none-eabihf
 ```
 
-## Regenerate `README.md`
-
-The `README.md` file can be regenerated with:
-
-```
-cargo readme > README.md
-```
+## Examples
 
 ### Example - projecting 3D world coordinates to 2D pixel coordinates.
 
@@ -180,7 +174,13 @@ result:
   └       ┘
 ```
 
-==========================================================
+## Regenerate `README.md`
+
+The `README.md` file can be regenerated with:
+
+```text
+cargo readme > README.md
+```
 
 ## Code of conduct
 
