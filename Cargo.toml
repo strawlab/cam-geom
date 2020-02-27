@@ -22,3 +22,6 @@ default = ["std"]
 
 std = ["nalgebra/std", "num-traits/std", "num-iter"]
 serde-serialize = ["serde", "nalgebra/serde-serialize"]
+
+[package.metadata.docs.rs]
+features = ["serde-serialize"]
