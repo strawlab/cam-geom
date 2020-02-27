@@ -4,8 +4,9 @@
 
 📷 📐 Geometric models of cameras for photogrammetry
 
-![pinhole model
-image](https://strawlab.org/assets/images/pinhole-model-ladybug.png)
+<img alt="pinhole model image"
+src="https://strawlab.org/assets/images/pinhole-model-ladybug.png"
+width="666" height="335" />
 
 (3D model by
 [Adan](https://sketchfab.com/3d-models/lowpoly-lady-bug-90b59b5185b14c52944573f236eb7175),
