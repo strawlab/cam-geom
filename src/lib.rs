@@ -52,16 +52,23 @@
 //!
 //! ## Unit tests
 //!
-//! To run all unit tests:
+//! To run the basic unit tests:
 //!
 //! ```text
 //! cargo test
 //! ```
 //!
+//! To run all unit tests:
+//!
+//! ```text
+//! cargo test --features serde-serialize
+//! ```
+//!
 //! ## Test for `no_std`
 //!
 //! Since the `thumbv7em-none-eabihf` target does not have `std` available, we
-//! can build for it to check that our crate does not inadvertently pull in std.
+//! can build for it to check that our crate does not inadvertently pull in
+//! std. The unit tests require std, so cannot be run on a `no_std` platform.
 //! The following will fail if a std dependency is present:
 //!
 //! ```text
