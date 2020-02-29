@@ -18,7 +18,22 @@
 
 You may also be interested in
 [rust-cv/cv-core](https://github.com/rust-cv/cv-core), which also contains
-camera models for photogrammetry.
+camera models for photogrammetry. The two crates were developed independently
+without knowledge of each other. There are some similarities, such as being
+built on nalgebra and having a goal of being no_std and no allocation
+compatible. As of cv-core 0.7.3 and cam-geom 0.1.3, the following differences
+exist between the camera models:
+
+- cam-geom has an IntrinsicParameters trait and can support different camera
+models. The perspective camera model looks identical in terms of
+parameterization between the two. cam-geom also has the orthographic model.
+
+- cam-geom can handle transformations of multiple points within a single
+function call. Hopefully this will allow vectorized math over many points in
+the inner loop, perhaps even automatically using SIMD by the compiler. So far,
+however, no such benchmarking or work in this direction has been done.
+
+- cam-geom supports the use serde for serialization of cameras.
 
 ## Regenerate `README.md`
 
