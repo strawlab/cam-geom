@@ -47,6 +47,12 @@
 //! * Extensive documentation and tests.
 //! * Requires rust version 1.40 or greater.
 //!
+//! # Altenatives
+//!
+//! You may also be interested in
+//! [rust-cv/cv-core](https://github.com/rust-cv/cv-core), which also contains
+//! camera models for photogrammetry.
+//!
 //! # Testing
 //!
 //! ## Unit tests
