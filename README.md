@@ -2,11 +2,20 @@
 
 <!-- Note: README.md is generated automatically by `cargo readme` -->
 
+[![Crates.io][ci]][cl] ![MIT/Apache][li] [![docs.rs][di]][dl]
+
+[ci]: https://img.shields.io/crates/v/cam-geom.svg
+[cl]: https://crates.io/crates/cam-geom/
+
+[li]: https://img.shields.io/crates/l/cam-geom.svg?maxAge=2592000
+
+[di]: https://docs.rs/cam-geom/badge.svg
+[dl]: https://docs.rs/cam-geom/
+
 📷 📐 Geometric models of cameras for photogrammetry
 
-<img alt="pinhole model image"
-src="https://strawlab.org/assets/images/pinhole-model-ladybug.png"
-width="666" height="335" />
+![pinhole model
+image](https://strawlab.org/assets/images/pinhole-model-ladybug.png)
 
 (3D model by
 [Adan](https://sketchfab.com/3d-models/lowpoly-lady-bug-90b59b5185b14c52944573f236eb7175),
@@ -52,20 +61,33 @@ Characteristics:
 * Extensive documentation and tests.
 * Requires rust version 1.40 or greater.
 
+## Altenatives
+
+You may also be interested in
+[rust-cv/cv-core](https://github.com/rust-cv/cv-core), which also contains
+camera models for photogrammetry.
+
 ## Testing
 
 ### Unit tests
 
-To run all unit tests:
+To run the basic unit tests:
 
 ```
 cargo test
 ```
 
+To run all unit tests:
+
+```
+cargo test --features serde-serialize
+```
+
 ### Test for `no_std`
 
 Since the `thumbv7em-none-eabihf` target does not have `std` available, we
-can build for it to check that our crate does not inadvertently pull in std.
+can build for it to check that our crate does not inadvertently pull in
+std. The unit tests require std, so cannot be run on a `no_std` platform.
 The following will fail if a std dependency is present:
 
 ```
