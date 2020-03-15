@@ -180,7 +180,6 @@ impl<R: RealField> ExtrinsicParameters<R> {
     /// Return a world coords unit vector aligned along the given direction
     ///
     /// `pt_cam` is specified in camera coords.
-    #[inline]
     fn lookdir(&self, pt_cam: &Point3<R>) -> Unit<Vector3<R>> {
         let cc = self.camcenter();
         let pt = self.cache.pose_inv.transform_point(&pt_cam) - cc;
@@ -220,6 +219,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
     }
 
     /// Convert rays in camera coordinates to world coordinates.
+    #[inline]
     pub fn ray_camera_to_world<BType, NPTS, StorageCamera>(
         &self,
         camera: &RayBundle<CameraFrame, BType, R, NPTS, StorageCamera>,

@@ -253,6 +253,7 @@ pub struct Pixels<R: RealField, NPTS: Dim, STORAGE> {
 
 impl<R: RealField, NPTS: Dim, STORAGE> Pixels<R, NPTS, STORAGE> {
     /// Create a new Pixels instance
+    #[inline]
     pub fn new(data: nalgebra::Matrix<R, NPTS, U2, STORAGE>) -> Self {
         Self { data }
     }
@@ -303,6 +304,7 @@ where
     NPTS: Dim,
 {
     /// Create a new Points instance from the underlying storage.
+    #[inline]
     pub fn new(data: nalgebra::Matrix<R, NPTS, U3, STORAGE>) -> Self {
         Self {
             coords: std::marker::PhantomData,
@@ -341,11 +343,13 @@ where
     DefaultAllocator: Allocator<R, NPTS, U3>,
 {
     /// get directions of each ray in bundle
+    #[inline]
     pub fn directions(&self) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>> {
         self.bundle_type.directions(&self.data)
     }
 
     /// get centers (origins) of each ray in bundle
+    #[inline]
     pub fn centers(&self) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>> {
         self.bundle_type.centers(&self.data)
     }
@@ -358,6 +362,7 @@ where
     R: RealField,
 {
     /// Return the single ray from the RayBundle with exactly one ray.
+    #[inline]
     pub fn to_single_ray(&self) -> Ray<Coords, R> {
         self.bundle_type.to_single_ray(&self.data)
     }
@@ -420,6 +425,7 @@ where
     ///
     /// The coordinate system is given by the `Coords` type and the bundle type
     /// (e.g. shared origin or shared direction) is given by the `BType`.
+    #[inline]
     fn new(bundle_type: BType, data: nalgebra::Matrix<R, NPTS, U3, StorageMultiple>) -> Self {
         Self {
             coords: std::marker::PhantomData,
@@ -432,6 +438,7 @@ where
     ///
     /// The distance of the point from the ray bundle center is not definted and
     /// can be arbitrary.
+    #[inline]
     pub fn point_on_ray(&self) -> Points<Coords, R, NPTS, Owned<R, NPTS, U3>>
     where
         DefaultAllocator: Allocator<R, NPTS, U3>,
@@ -440,6 +447,7 @@ where
     }
 
     /// get a 3D point on the ray at a defined distance from the origin(s)
+    #[inline]
     pub fn point_on_ray_at_distance(
         &self,
         distance: R,
@@ -451,6 +459,7 @@ where
             .point_on_ray_at_distance(&self.data, distance)
     }
 
+    #[inline]
     fn to_pose<OutFrame>(
         &self,
         pose: Isometry3<R>,
@@ -479,6 +488,7 @@ pub struct Ray<Coords, R: RealField> {
 
 impl<Coords, R: RealField> Ray<Coords, R> {
     /// Create a new ray from center (origin) and direction.
+    #[inline]
     pub fn new(center: MatrixMN<R, U1, U3>, direction: MatrixMN<R, U1, U3>) -> Self {
         Self {
             center,

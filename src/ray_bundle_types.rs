@@ -17,6 +17,7 @@ where
     R: RealField,
 {
     /// Create a new SharedOriginRayBundle with origin (center) at zero.
+    #[inline]
     pub fn new_shared_zero_origin() -> Self {
         // center is at (0,0,0)
         let zero = nalgebra::convert(0.0);
@@ -30,6 +31,7 @@ impl<R> Bundle<R> for SharedOriginRayBundle<R>
 where
     R: RealField,
 {
+    #[inline]
     fn to_single_ray<Coords>(&self, self_data: &MatrixMN<R, U1, U3>) -> Ray<Coords, R>
     where
         Coords: CoordinateSystem,

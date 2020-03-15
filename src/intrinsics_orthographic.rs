@@ -54,6 +54,7 @@ pub struct OrthographicParams<R: RealField> {
 }
 
 impl<R: RealField> From<OrthographicParams<R>> for IntrinsicParametersOrthographic<R> {
+    #[inline]
     fn from(params: OrthographicParams<R>) -> Self {
         Self { params }
     }

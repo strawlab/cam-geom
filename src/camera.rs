@@ -87,6 +87,7 @@ where
     ///
     /// # Arguments
     /// Intrinsic parameters and extrinsic parameters
+    #[inline]
     pub fn new(intrinsics: I, extrinsics: ExtrinsicParameters<R>) -> Self {
         Self {
             intrinsics,
@@ -95,11 +96,13 @@ where
     }
 
     /// Return a reference to the extrinsic parameters.
+    #[inline]
     pub fn extrinsics(&self) -> &ExtrinsicParameters<R> {
         &self.extrinsics
     }
 
     /// Return a reference to the intrinsic parameters.
+    #[inline]
     pub fn intrinsics(&self) -> &I {
         &self.intrinsics
     }
