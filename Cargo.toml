@@ -10,7 +10,6 @@ repository = "https://github.com/strawlab/cam-geom"
 
 [dependencies]
 nalgebra = {version="0.20", default-features=false}
-num-traits = {version="0.2", default-features=false}
 approx = {version="0.3", default-features=false}
 num-iter = {version="0.1.40", default-features=false, optional=true}
 itertools = {version="0.9", default-features=false}
@@ -22,7 +21,7 @@ serde_json = "1.0"
 [features]
 default = ["std"]
 
-std = ["nalgebra/std", "num-traits/std", "num-iter"]
+std = ["nalgebra/std", "num-iter"]
 serde-serialize = ["serde", "nalgebra/serde-serialize"]
 
 [package.metadata.docs.rs]
