@@ -17,7 +17,9 @@
 //! [orthographic
 //! camera](https://en.wikipedia.org/wiki/Orthographic_projection). Adding
 //! another camera model entails implementing the
-//! [`IntrinsicParameters`](trait.IntrinsicParameters.html) trait.
+//! [`IntrinsicParameters`](trait.IntrinsicParameters.html) trait. See the
+//! [`opencv_ros_camera`](https://crates.io/crates/opencv-ros-camera) crate
+//! for one example.
 //!
 //! Also provided is the function
 //! [`best_intersection_of_rays()`](fn.best_intersection_of_rays.html) which
@@ -35,9 +37,9 @@
 //! * Possible to create new camera models by implementing the
 //!   [`IntrinsicParameters`](trait.IntrinsicParameters.html) trait. While the
 //!   camera models implemented in this crate are linear, there is no
-//!   requirement that implementations are linear. For example, it is
-//!   anticipated that other implementations may exhibit
-//!   [distortion](https://en.wikipedia.org/wiki/Distortion_(optics)).
+//!   requirement that implementations are linear. For example, the
+//!   [`opencv_ros_camera`](https://crates.io/crates/opencv-ros-camera) crate
+//!   exhibits [distortion](https://en.wikipedia.org/wiki/Distortion_(optics)).
 //! * [`ExtrinsicParameters`](struct.ExtrinsicParameters.html) based on the
 //!   [`nalgebra::Isometry3`](https://docs.rs/nalgebra/latest/nalgebra/geometry/type.Isometry3.html)
 //!   type to handle the camera pose.
