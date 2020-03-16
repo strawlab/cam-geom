@@ -131,6 +131,36 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
         Ok(params.into())
     }
 
+    /// Get X focal length
+    #[inline]
+    pub fn fx(&self) -> R {
+        self.params.fx
+    }
+
+    /// Get Y focal length
+    #[inline]
+    pub fn fy(&self) -> R {
+        self.params.fy
+    }
+
+    /// Get skew
+    #[inline]
+    pub fn skew(&self) -> R {
+        self.params.skew
+    }
+
+    /// Get X center
+    #[inline]
+    pub fn cx(&self) -> R {
+        self.params.cx
+    }
+
+    /// Get Y center
+    #[inline]
+    pub fn cy(&self) -> R {
+        self.params.cy
+    }
+
     /// Create a 3x3 projection matrix.
     #[inline]
     pub(crate) fn as_intrinsics_matrix<'a>(
@@ -482,5 +512,10 @@ mod tests {
         let buf = serde_json::to_string(&expected).unwrap();
         let actual: IntrinsicParametersPerspective<f64> = serde_json::from_str(&buf).unwrap();
         assert!(expected == actual);
+        assert!(actual.fx()==100.0);
+        assert!(actual.fy()==102.0);
+        assert!(actual.skew()==0.1);
+        assert!(actual.cx()==321.0);
+        assert!(actual.cy()==239.9);
     }
 }
