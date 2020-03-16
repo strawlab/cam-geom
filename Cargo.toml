@@ -7,6 +7,8 @@ description = "Geometric models of cameras for photogrammetry"
 license = "MIT/Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/strawlab/cam-geom"
+keywords = ["computer", "vision", "photogrammetry"]
+categories = ["algorithms", "computer-vision", "no-std", "science", "science::robotics"]
 
 [dependencies]
 nalgebra = {version="0.20", default-features=false}
