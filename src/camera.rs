@@ -15,7 +15,7 @@ use crate::{
     Bundle, Error, ExtrinsicParameters, IntrinsicParameters, Pixels, Points, RayBundle,
 };
 
-/// A camera, which can convert world coordinates into pixel coordinates.
+/// A camera model that can convert world coordinates into pixel coordinates.
 ///
 /// # Examples
 ///
