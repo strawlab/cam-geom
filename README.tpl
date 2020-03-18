@@ -2,15 +2,9 @@
 
 <!-- Note: README.md is generated automatically by `cargo readme` -->
 
-[![Crates.io][ci]][cl] ![MIT/Apache][li] [![docs.rs][di]][dl]
-
-[ci]: https://img.shields.io/crates/v/cam-geom.svg
-[cl]: https://crates.io/crates/cam-geom/
-
-[li]: https://img.shields.io/crates/l/cam-geom.svg?maxAge=2592000
-
-[di]: https://docs.rs/cam-geom/badge.svg
-[dl]: https://docs.rs/cam-geom/
+[![Crates.io](https://img.shields.io/crates/v/cam-geom.svg)](https://crates.io/crates/cam-geom)
+[![Documentation](https://docs.rs/cam-geom/badge.svg)](https://docs.rs/cam-geom/)
+[![Crate License](https://img.shields.io/crates/l/cam-geom.svg)](https://crates.io/crates/cam-geom)
 
 {{readme}}
 
