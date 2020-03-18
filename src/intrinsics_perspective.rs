@@ -512,10 +512,10 @@ mod tests {
         let buf = serde_json::to_string(&expected).unwrap();
         let actual: IntrinsicParametersPerspective<f64> = serde_json::from_str(&buf).unwrap();
         assert!(expected == actual);
-        assert!(actual.fx()==100.0);
-        assert!(actual.fy()==102.0);
-        assert!(actual.skew()==0.1);
-        assert!(actual.cx()==321.0);
-        assert!(actual.cy()==239.9);
+        assert!(actual.fx() == 100.0);
+        assert!(actual.fy() == 102.0);
+        assert!(actual.skew() == 0.1);
+        assert!(actual.cx() == 321.0);
+        assert!(actual.cy() == 239.9);
     }
 }
