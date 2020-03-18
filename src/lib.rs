@@ -216,6 +216,8 @@ pub mod ray_bundle_types;
 mod ray_intersection;
 pub use ray_intersection::best_intersection_of_rays;
 
+pub mod linearize;
+
 /// All possible errors.
 #[cfg_attr(feature = "std", derive(Debug))]
 #[non_exhaustive]
