@@ -5,6 +5,7 @@
 [![Crates.io](https://img.shields.io/crates/v/cam-geom.svg)](https://crates.io/crates/cam-geom)
 [![Documentation](https://docs.rs/cam-geom/badge.svg)](https://docs.rs/cam-geom/)
 [![Crate License](https://img.shields.io/crates/l/cam-geom.svg)](https://crates.io/crates/cam-geom)
+[![Dependency status](https://deps.rs/repo/github/strawlab/cam-geom/status.svg)](https://deps.rs/repo/github/strawlab/cam-geom)
 
 {{readme}}
 
