@@ -194,8 +194,7 @@ impl<R: RealField> Camera<R, IntrinsicParametersPerspective<R>> {
             m
         };
 
-        let m = m / m[(2, 3)]; // normalize
-        m
+        m / m[(2, 3)] // normalize
     }
 }
 
