@@ -1,4 +1,4 @@
-#![deny(rust_2018_idioms, unsafe_code, missing_docs)]
+#![deny(unsafe_code, missing_docs)]
 
 use nalgebra as na;
 
