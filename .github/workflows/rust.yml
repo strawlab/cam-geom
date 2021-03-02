@@ -7,9 +7,12 @@ on:
     branches: [ '**' ]
 
 jobs:
-  std-ubuntu:
+  std:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -18,9 +21,12 @@ jobs:
     - name: Run tests
       run: cargo test
 
-  nostd-ubuntu:
+  nostd:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -29,9 +35,12 @@ jobs:
     - name: Build
       run: cargo build --no-default-features --target thumbv7em-none-eabihf
 
-  serde-ubuntu:
+  serde:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
