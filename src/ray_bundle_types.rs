@@ -1,4 +1,4 @@
-use nalgebra::MatrixMN;
+use nalgebra::OMatrix;
 
 use crate::*;
 
@@ -32,7 +32,7 @@ where
     R: RealField,
 {
     #[inline]
-    fn to_single_ray<Coords>(&self, self_data: &MatrixMN<R, U1, U3>) -> Ray<Coords, R>
+    fn to_single_ray<Coords>(&self, self_data: &OMatrix<R, U1, U3>) -> Ray<Coords, R>
     where
         Coords: CoordinateSystem,
     {
@@ -53,7 +53,7 @@ where
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
-        let mut result = nalgebra::MatrixMN::<R, NPTS, U3>::zeros();
+        let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
                 result[(i, j)] = self_data[(i, j)];
@@ -72,7 +72,7 @@ where
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
-        let mut result = nalgebra::MatrixMN::<R, NPTS, U3>::zeros();
+        let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
                 result[(i, j)] = self.center[j];
@@ -93,7 +93,7 @@ where
         OutFrame: CoordinateSystem,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let mut result = Points::new(MatrixMN::zeros_generic(
+        let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(directions.nrows()),
             U3::from_usize(3),
         ));
@@ -119,7 +119,7 @@ where
         OutFrame: CoordinateSystem,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let mut result = Points::new(MatrixMN::zeros_generic(
+        let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(directions.nrows()),
             U3::from_usize(3),
         ));
@@ -153,7 +153,7 @@ where
         let bundle_type = Self::new_shared_zero_origin();
         let mut reposed = RayBundle::new(
             bundle_type,
-            MatrixMN::zeros_generic(NPTS::from_usize(self_data.nrows()), U3::from_usize(3)),
+            OMatrix::zeros_generic(NPTS::from_usize(self_data.nrows()), U3::from_usize(3)),
         );
         // transform single bundle center point
         let new_center = pose.transform_point(&self.center);
@@ -190,7 +190,7 @@ impl<R: RealField> SharedDirectionRayBundle<R> {
 }
 
 impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
-    fn to_single_ray<Coords>(&self, self_data: &MatrixMN<R, U1, U3>) -> Ray<Coords, R>
+    fn to_single_ray<Coords>(&self, self_data: &OMatrix<R, U1, U3>) -> Ray<Coords, R>
     where
         Coords: CoordinateSystem,
     {
@@ -211,7 +211,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
-        let mut result = nalgebra::MatrixMN::<R, NPTS, U3>::zeros();
+        let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
                 result[(i, j)] = self.direction[j];
@@ -230,7 +230,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
-        let mut result = nalgebra::MatrixMN::<R, NPTS, U3>::zeros();
+        let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
                 result[(i, j)] = self_data[(i, j)];
@@ -251,7 +251,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         OutFrame: CoordinateSystem,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let mut result = Points::new(MatrixMN::zeros_generic(
+        let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(centers.nrows()),
             U3::from_usize(3),
         ));
@@ -277,7 +277,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         OutFrame: CoordinateSystem,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let mut result = Points::new(MatrixMN::zeros_generic(
+        let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(centers.nrows()),
             U3::from_usize(3),
         ));
@@ -315,7 +315,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
 
         let mut reposed = RayBundle::new(
             bundle_type,
-            MatrixMN::zeros_generic(NPTS::from_usize(self_data.nrows()), U3::from_usize(3)),
+            OMatrix::zeros_generic(NPTS::from_usize(self_data.nrows()), U3::from_usize(3)),
         );
 
         // transform single bundle direction

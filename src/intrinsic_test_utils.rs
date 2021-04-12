@@ -18,7 +18,7 @@ pub(crate) fn generate_uv_raw<R: RealField>(
         }
     }
 
-    let mut data = nalgebra::MatrixMN::<R, Dynamic, U2>::from_element(uv_raws.len(), convert(0.0));
+    let mut data = nalgebra::OMatrix::<R, Dynamic, U2>::from_element(uv_raws.len(), convert(0.0));
     for i in 0..uv_raws.len() {
         for j in 0..2 {
             data[(i, j)] = uv_raws[i][j];

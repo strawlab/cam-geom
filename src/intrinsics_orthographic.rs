@@ -1,7 +1,7 @@
 use nalgebra::{
     allocator::Allocator,
     base::storage::{Owned, Storage},
-    convert, DefaultAllocator, Dim, MatrixMN, RealField, U2, U3,
+    convert, DefaultAllocator, Dim, OMatrix, RealField, U2, U3,
 };
 
 #[cfg(feature = "serde-serialize")]
@@ -89,7 +89,7 @@ where
         let zero = convert(0.0);
 
         // allocate zeros, fill later
-        let mut result = RayBundle::new_shared_plusz_direction(MatrixMN::zeros_generic(
+        let mut result = RayBundle::new_shared_plusz_direction(OMatrix::zeros_generic(
             NPTS::from_usize(pixels.data.nrows()),
             U3::from_usize(3),
         ));
@@ -123,7 +123,7 @@ where
         NPTS: Dim,
         DefaultAllocator: Allocator<R, NPTS, U2>,
     {
-        let mut result = Pixels::new(MatrixMN::zeros_generic(
+        let mut result = Pixels::new(OMatrix::zeros_generic(
             NPTS::from_usize(camera.data.nrows()),
             U2::from_usize(2),
         ));

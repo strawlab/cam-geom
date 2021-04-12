@@ -3,7 +3,7 @@
 
 use cam_geom::*;
 use nalgebra::{
-    allocator::Allocator, storage::Storage, DefaultAllocator, Dim, Matrix, MatrixMN, Unit, Vector3,
+    allocator::Allocator, storage::Storage, DefaultAllocator, Dim, Matrix, OMatrix, Unit, Vector3,
     U1, U2, U3, U8,
 };
 
@@ -174,7 +174,7 @@ where
 fn main() -> Result<(), std::io::Error> {
     // Create cube vertices in the world coordinate frame.
     let world_coords =
-        Points::<WorldFrame, _, _, _>::new(MatrixMN::<f64, U8, U3>::from_row_slice(&[
+        Points::<WorldFrame, _, _, _>::new(OMatrix::<f64, U8, U3>::from_row_slice(&[
             -1.0, -1.0, -1.0, // v1
             1.0, -1.0, -1.0, // v2
             1.0, 1.0, -1.0, // v3

@@ -4,7 +4,7 @@ use nalgebra::{
     storage::{Owned, Storage},
     DefaultAllocator, RealField,
 };
-use nalgebra::{convert, Dim, MatrixMN, Unit, Vector3, U3, U4};
+use nalgebra::{convert, Dim, OMatrix, Unit, Vector3, U3, U4};
 
 #[cfg(feature = "serde-serialize")]
 use serde::{Deserialize, Serialize};
@@ -39,7 +39,7 @@ impl<R: RealField> std::fmt::Debug for ExtrinsicParameters<R> {
 pub(crate) struct ExtrinsicsCache<R: RealField> {
     pub(crate) q: Rotation3<R>,
     pub(crate) translation: Point3<R>,
-    pub(crate) qt: MatrixMN<R, U3, U4>,
+    pub(crate) qt: OMatrix<R, U3, U4>,
     pub(crate) q_inv: Rotation3<R>,
     pub(crate) camcenter_z0: Point3<R>,
     pub(crate) pose: Isometry3<R>,
@@ -61,7 +61,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
         #[rustfmt::skip]
         let qt = {
             let q = q.matrix();
-            MatrixMN::<R,U3,U4>::new(
+            OMatrix::<R,U3,U4>::new(
                 q[(0,0)], q[(0,1)], q[(0,2)], translation[0],
                 q[(1,0)], q[(1,1)], q[(1,2)], translation[1],
                 q[(2,0)], q[(2,1)], q[(2,2)], translation[2],
@@ -143,7 +143,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
 
     /// Return the pose as a 3x4 matrix
     #[inline]
-    pub fn matrix(&self) -> &MatrixMN<R, U3, U4> {
+    pub fn matrix(&self) -> &OMatrix<R, U3, U4> {
         &self.cache.qt
     }
 
@@ -196,7 +196,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
         InStorage: Storage<R, NPTS, U3>,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let mut world = Points::new(MatrixMN::zeros_generic(
+        let mut world = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(cam_coords.data.nrows()),
             U3::from_usize(3),
         ));
@@ -243,7 +243,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
         InStorage: Storage<R, NPTS, U3>,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let mut cam_coords = Points::new(MatrixMN::zeros_generic(
+        let mut cam_coords = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(world.data.nrows()),
             U3::from_usize(3),
         ));
@@ -401,7 +401,7 @@ mod tests {
 
         let cam_coords = Points {
             coords: std::marker::PhantomData,
-            data: MatrixMN::<R, U4, U3>::new(
+            data: OMatrix::<R, U4, U3>::new(
                 zero, zero, zero, // at camera center
                 zero, zero, one, // one unit in +Z - exactly in camera direction
                 one, zero, zero, // one unit in +X - right of camera axis
@@ -410,7 +410,7 @@ mod tests {
         };
 
         #[rustfmt::skip]
-        let world_expected = MatrixMN::<R, U4, U3>::new(
+        let world_expected = OMatrix::<R, U4, U3>::new(
             c(1.2), c(3.4), c(5.6),
             c(2.2), c(3.4), c(5.6),
             c(1.2), c(2.4), c(5.6),

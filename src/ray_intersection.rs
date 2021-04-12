@@ -3,7 +3,7 @@
 use nalgebra as na;
 
 use na::{
-    allocator::Allocator, base::storage::Owned, DefaultAllocator, Dim, Dynamic, Matrix3, MatrixMN,
+    allocator::Allocator, base::storage::Owned, DefaultAllocator, Dim, Dynamic, Matrix3, OMatrix,
     RealField, Vector3, U1, U3,
 };
 
@@ -27,7 +27,7 @@ macro_rules! refsum_as_f64 {
 /// convert from specialized type (e.g. f64) into generic type $R
 macro_rules! despecialize {
     ($a:expr, $R:ty, $rows:ty, $cols:ty) => {{
-        MatrixMN::<$R, $rows, $cols>::from_iterator(
+        OMatrix::<$R, $rows, $cols>::from_iterator(
             $a.as_slice().into_iter().map(|x| na::convert(*x)),
         )
     }};
@@ -56,8 +56,8 @@ where
     let u1 = U1::from_usize(1);
     let u3 = U3::from_usize(3);
 
-    let mut line_dirs = MatrixMN::<R, Dynamic, U3>::zeros_generic(npts, u3);
-    let mut line_points = MatrixMN::<R, Dynamic, U3>::zeros_generic(npts, u3);
+    let mut line_dirs = OMatrix::<R, Dynamic, U3>::zeros_generic(npts, u3);
+    let mut line_points = OMatrix::<R, Dynamic, U3>::zeros_generic(npts, u3);
 
     for i in 0..rays.len() {
         let ray_wc = rays.get(i).unwrap();
@@ -76,12 +76,12 @@ where
         line_points[(i, 2)] = ray_wc.center[(0, 2)];
     }
 
-    let mut xxm1 = MatrixMN::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut yym1 = MatrixMN::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut zzm1 = MatrixMN::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut xy = MatrixMN::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut xz = MatrixMN::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut yz = MatrixMN::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut xxm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut yym1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut zzm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut xy = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut xz = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut yz = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
 
     // TODO element-wise add, mul with nalgebra matrices
 
@@ -152,14 +152,14 @@ where
     let s_pinv = despecialize!(s_f64_pinv, R, U3, U3);
     let r: Vector3<R> = s_pinv * C;
 
-    let mut result = crate::Points::new(nalgebra::MatrixMN::<R, U1, U3>::zeros_generic(u1, u3));
+    let mut result = crate::Points::new(nalgebra::OMatrix::<R, U1, U3>::zeros_generic(u1, u3));
     for j in 0..3 {
         result.data[(0, j)] = r[j];
     }
     Ok(result)
 }
 
-fn my_pinv<R: RealField>(m: &MatrixMN<R, U3, U3>) -> Result<MatrixMN<R, U3, U3>, Error> {
+fn my_pinv<R: RealField>(m: &OMatrix<R, U3, U3>) -> Result<OMatrix<R, U3, U3>, Error> {
     Ok(
         na::linalg::SVD::try_new(*m, true, true, na::convert(1e-7), 100)
             .ok_or(Error::SvdFailed)?
@@ -210,7 +210,7 @@ mod tests {
         );
         let cam2 = Camera::new(i2, e2);
 
-        let expected_point = Points::new(MatrixMN::<_, U1, U3>::new(2.21, 3.41, 5.61));
+        let expected_point = Points::new(OMatrix::<_, U1, U3>::new(2.21, 3.41, 5.61));
 
         let image1 = cam1.world_to_pixel(&expected_point);
 

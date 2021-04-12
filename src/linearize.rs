@@ -1,13 +1,13 @@
 //! Linearize camera models by computing the Jacobian matrix.
 
 use crate::{Camera, IntrinsicParametersPerspective, Points, WorldFrame};
-use nalgebra::{storage::Storage, MatrixMN, RealField, U1, U2, U3, U4};
+use nalgebra::{storage::Storage, OMatrix, RealField, U1, U2, U3, U4};
 
 /// Required data required for finding Jacobian of perspective camera models.
 ///
 /// Create this with the [`new()`](struct.JacobianPerspectiveCache.html#method.new) method.
 pub struct JacobianPerspectiveCache<R: RealField> {
-    m: MatrixMN<R, U3, U4>,
+    m: OMatrix<R, U3, U4>,
 }
 
 impl<R: RealField> JacobianPerspectiveCache<R> {
@@ -36,7 +36,7 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
     pub fn linearize_at<STORAGE>(
         &self,
         p: &Points<WorldFrame, R, U1, STORAGE>,
-    ) -> MatrixMN<R, U2, U3>
+    ) -> OMatrix<R, U2, U3>
     where
         STORAGE: Storage<R, U1, U3>,
     {
@@ -63,7 +63,7 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
         let vy = -p[(2, 1)] * denom_sqrt * factor_v + p[(1, 1)] / denom;
         let vz = -p[(2, 2)] * denom_sqrt * factor_v + p[(1, 2)] / denom;
 
-        MatrixMN::<R, U2, U3>::new(ux, uy, uz, vx, vy, vz)
+        OMatrix::<R, U2, U3>::new(ux, uy, uz, vx, vy, vz)
     }
 }
 
@@ -102,7 +102,7 @@ fn test_jacobian_perspective() {
     let offset = Vector3::new(0.0, 0.0, 0.01);
 
     // Get the 2D projection (in pixels) of our center.
-    let center_projected: MatrixMN<f64, U1, U2> = cam.world_to_pixel(&center).data;
+    let center_projected: OMatrix<f64, U1, U2> = cam.world_to_pixel(&center).data;
 
     // Linearize the camera model around the center 3D point.
     let linearized_cam = cam_jac.linearize_at(&center);
@@ -116,8 +116,8 @@ fn test_jacobian_perspective() {
     // Get the 2D projection (in pixels) point with the linearized camera model
     let o = linearized_cam * offset;
     let linear_prediction = RowVector2::new(
-        center_projected.data[0] + o[0],
-        center_projected.data[1] + o[1],
+        center_projected.x + o[0],
+        center_projected.y + o[1],
     );
 
     // Check both approaches are equal
