@@ -19,7 +19,7 @@ fn get_perspective_cam() -> Camera<f64, IntrinsicParametersPerspective<f64>> {
     };
 
     // Set extrinsic parameters.
-    let camcenter = Vector3::new(10.0, 0.0, 10.0);
+    let camcenter = Vector3::new(10.0, 3.0, 5.0);
     let lookat = Vector3::new(0.0, 0.0, 0.0);
     let up = Unit::new_normalize(Vector3::new(0.0, 0.0, 1.0));
     let pose = ExtrinsicParameters::from_view(&camcenter, &lookat, &up);
@@ -38,7 +38,7 @@ fn get_ortho_cam() -> Camera<f64, IntrinsicParametersOrthographic<f64>> {
     };
 
     // Set extrinsic parameters.
-    let camcenter = Vector3::new(10.0, 0.0, 10.0);
+    let camcenter = Vector3::new(10.0, 3.0, 5.0);
     let lookat = Vector3::new(0.0, 0.0, 0.0);
     let up = Unit::new_normalize(Vector3::new(0.0, 0.0, 1.0));
     let pose = ExtrinsicParameters::from_view(&camcenter, &lookat, &up);
