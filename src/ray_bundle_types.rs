@@ -1,4 +1,4 @@
-use nalgebra::OMatrix;
+use nalgebra::{OMatrix, SMatrix};
 
 use crate::*;
 
@@ -32,7 +32,7 @@ where
     R: RealField,
 {
     #[inline]
-    fn to_single_ray<Coords>(&self, self_data: &OMatrix<R, U1, U3>) -> Ray<Coords, R>
+    fn to_single_ray<Coords>(&self, self_data: &SMatrix<R, 1, 3>) -> Ray<Coords, R>
     where
         Coords: CoordinateSystem,
     {
@@ -190,7 +190,7 @@ impl<R: RealField> SharedDirectionRayBundle<R> {
 }
 
 impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
-    fn to_single_ray<Coords>(&self, self_data: &OMatrix<R, U1, U3>) -> Ray<Coords, R>
+    fn to_single_ray<Coords>(&self, self_data: &SMatrix<R, 1, 3>) -> Ray<Coords, R>
     where
         Coords: CoordinateSystem,
     {

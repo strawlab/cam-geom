@@ -2,7 +2,7 @@ use nalgebra::{
     allocator::Allocator,
     convert,
     storage::{Owned, Storage},
-    DefaultAllocator, Dim, Matrix, OMatrix, RealField, SliceStorage, U1, U2, U3, U4,
+    DefaultAllocator, Dim, Matrix, OMatrix, RealField, SMatrix, SliceStorage, U1, U2, U3,
 };
 
 #[cfg(feature = "serde-serialize")]
@@ -66,7 +66,7 @@ impl<R: RealField> From<PerspectiveParams<R>> for IntrinsicParametersPerspective
     fn from(params: PerspectiveParams<R>) -> Self {
         use nalgebra::convert as c;
         #[rustfmt::skip]
-        let cache_p = nalgebra::OMatrix::<R,U3,U4>::new(
+        let cache_p = nalgebra::SMatrix::<R,3,4>::new(
             params.fx, params.skew, params.cx, c(0.0),
              c(0.0),     params.fy, params.cy, c(0.0),
              c(0.0),        c(0.0), c(1.0), c(0.0),
@@ -84,7 +84,7 @@ impl<R: RealField> From<PerspectiveParams<R>> for IntrinsicParametersPerspective
 pub struct IntrinsicParametersPerspective<R: RealField> {
     params: PerspectiveParams<R>,
     #[cfg_attr(feature = "serde-serialize", serde(skip))]
-    pub(crate) cache_p: OMatrix<R, U3, U4>,
+    pub(crate) cache_p: SMatrix<R, 3, 4>,
 }
 
 impl<R: RealField> IntrinsicParametersPerspective<R> {
@@ -92,7 +92,7 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
     ///
     /// Returns an error if the intrinsic parameter matrix is not normalized or
     /// otherwise does not represent a perspective camera model.
-    pub fn from_normalized_3x4_matrix(p: OMatrix<R, U3, U4>) -> std::result::Result<Self, Error> {
+    pub fn from_normalized_3x4_matrix(p: SMatrix<R, 3, 4>) -> std::result::Result<Self, Error> {
         let params = PerspectiveParams {
             fx: p[(0, 0)],
             fy: p[(1, 1)],
@@ -354,7 +354,7 @@ fn _test_is_deserialize() {
 
 #[cfg(test)]
 mod tests {
-    use nalgebra::{OMatrix, Vector3, U1, U2, U3, U4};
+    use nalgebra::{SMatrix, Vector3};
 
     use super::{IntrinsicParametersPerspective, PerspectiveParams};
     use crate::camera::{roundtrip_camera, Camera};
@@ -388,7 +388,7 @@ mod tests {
     #[test]
     fn reject_invalid_projection_matrix() {
         #[rustfmt::skip]
-        let p_valid = nalgebra::OMatrix::<f64,U3,U4>::new(
+        let p_valid = nalgebra::SMatrix::<f64,3,4>::new(
             10.0,  0.0, 0.0, 0.0,
              0.0, 10.0, 0.0, 0.0,
              0.0,  0.0, 1.0, 0.0,
@@ -426,9 +426,9 @@ mod tests {
 
     fn assert_is_pmat_same(
         cam: &Camera<f64, IntrinsicParametersPerspective<f64>>,
-        pmat: &OMatrix<f64, U3, U4>,
+        pmat: &SMatrix<f64, 3, 4>,
     ) {
-        let camcoord_pts = Points::new(OMatrix::<f64, U2, U3>::new(
+        let camcoord_pts = Points::new(SMatrix::<f64, 2, 3>::new(
             1.23, 4.56, 7.89, // pt 1
             1.0, 2.0, 3.0, // pt 2
         ));
@@ -443,7 +443,7 @@ mod tests {
             let cc = camcoord_pts.data.row(i);
             let coords = nalgebra::Point3::new(cc[(0, 0)], cc[(0, 1)], cc[(0, 2)]);
             let cc = pmat * coords.to_homogeneous();
-            let pt2 = OMatrix::<f64, U1, U2>::new(cc[0] / cc[2], cc[1] / cc[2]);
+            let pt2 = SMatrix::<f64, 1, 2>::new(cc[0] / cc[2], cc[1] / cc[2]);
 
             approx::assert_abs_diff_eq!(pt1[0], pt2[0], epsilon = 1e-5);
             approx::assert_abs_diff_eq!(pt1[1], pt2[1], epsilon = 1e-5);

@@ -191,8 +191,8 @@ use serde::{Deserialize, Serialize};
 use nalgebra::{
     allocator::Allocator,
     storage::{Owned, Storage},
-    DefaultAllocator, Dim, DimName, Isometry3, Matrix, OMatrix, Point3, RealField, Vector3, U1,
-    U2, U3,
+    DefaultAllocator, Dim, DimName, Isometry3, Matrix, Point3, RealField, SMatrix, Vector3, U1, U2,
+    U3,
 };
 
 #[cfg(feature = "std")]
@@ -484,16 +484,16 @@ where
 /// `RayBundle::to_single_ray()`.
 pub struct Ray<Coords, R: RealField> {
     /// The center (origin) of the ray.
-    pub center: OMatrix<R, U1, U3>,
+    pub center: SMatrix<R, 1, 3>,
     /// The direction of the ray.
-    pub direction: OMatrix<R, U1, U3>,
+    pub direction: SMatrix<R, 1, 3>,
     c: std::marker::PhantomData<Coords>,
 }
 
 impl<Coords, R: RealField> Ray<Coords, R> {
     /// Create a new ray from center (origin) and direction.
     #[inline]
-    pub fn new(center: OMatrix<R, U1, U3>, direction: OMatrix<R, U1, U3>) -> Self {
+    pub fn new(center: SMatrix<R, 1, 3>, direction: SMatrix<R, 1, 3>) -> Self {
         Self {
             center,
             direction,
@@ -508,7 +508,7 @@ where
     R: RealField,
 {
     /// Return a single ray from a `RayBundle` with exactly one ray.
-    fn to_single_ray<Coords>(&self, self_data: &OMatrix<R, U1, U3>) -> Ray<Coords, R>
+    fn to_single_ray<Coords>(&self, self_data: &SMatrix<R, 1, 3>) -> Ray<Coords, R>
     where
         Coords: CoordinateSystem;
 
@@ -626,12 +626,11 @@ mod tests {
     #[test]
     fn rays_shared_origin() {
         // Create rays in world coorindates all with a shared origin at zero.
-        let b1 = RayBundle::<WorldFrame, _, _, _, _>::new_shared_zero_origin(
-            OMatrix::<_, U2, U3>::new(
+        let b1 =
+            RayBundle::<WorldFrame, _, _, _, _>::new_shared_zero_origin(SMatrix::<_, 2, 3>::new(
                 1.0, 2.0, 3.0, // ray 1
                 4.0, 5.0, 6.0, // ray 2
-            ),
-        );
+            ));
 
         // Get points on rays at a specific distance.
         let actual_dist1 = b1.point_on_ray_at_distance(1.0).data;
@@ -640,7 +639,7 @@ mod tests {
             // Manually compte what these points should be.
             let r1m = (1.0_f64 + 4.0 + 9.0).sqrt();
             let r2m = (16.0_f64 + 25.0 + 36.0).sqrt();
-            let expected = OMatrix::<_, U2, U3>::new(
+            let expected = SMatrix::<_, 2, 3>::new(
                 1.0 / r1m,
                 2.0 / r1m,
                 3.0 / r1m, // ray 1
@@ -667,20 +666,19 @@ mod tests {
     #[test]
     fn rays_shared_direction() {
         // Create rays in world coorindates all with a shared direction (+z).
-        let b1 =
-            RayBundle::<WorldFrame, _, _, _, _>::new_shared_plusz_direction(
-                OMatrix::<_, U2, U3>::new(
-                    1.0, 2.0, 0.0, // ray 1
-                    3.0, 4.0, 0.0, // ray 2
-                ),
-            );
+        let b1 = RayBundle::<WorldFrame, _, _, _, _>::new_shared_plusz_direction(
+            SMatrix::<_, 2, 3>::new(
+                1.0, 2.0, 0.0, // ray 1
+                3.0, 4.0, 0.0, // ray 2
+            ),
+        );
 
         // Get points on rays at a specific distance.
         let actual_dist10 = b1.point_on_ray_at_distance(10.0).data;
 
         {
             // Manually compte what these points should be.
-            let expected_dist10 = OMatrix::<_, U2, U3>::new(
+            let expected_dist10 = SMatrix::<_, 2, 3>::new(
                 1.0, 2.0, 10.0, // ray 1
                 3.0, 4.0, 10.0, // ray 2
             );
@@ -694,7 +692,7 @@ mod tests {
 
         {
             // Manually compte what these points should be.
-            let expected_dist0 = OMatrix::<_, U2, U3>::new(
+            let expected_dist0 = SMatrix::<_, 2, 3>::new(
                 1.0, 2.0, 0.0, // ray 1
                 3.0, 4.0, 0.0, // ray 2
             );
@@ -737,7 +735,7 @@ mod tests {
     fn test_ray_bundle_serde() {
         let expected =
             RayBundle::<WorldFrame, _, _, _, _>::new_shared_plusz_direction(
-                OMatrix::<_, U2, U3>::new(
+                SMatrix::<_, 2, 3>::new(
                     1.0, 2.0, 0.0, // ray 1
                     3.0, 4.0, 0.0, // ray 2
                 ),

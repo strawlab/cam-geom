@@ -3,7 +3,7 @@ use nalgebra::{
     base::storage::{Owned, Storage},
     convert,
     geometry::{Point3, Rotation3, UnitQuaternion},
-    DefaultAllocator, Dim, Matrix, Matrix3, OMatrix, RealField, Vector3, U1, U2, U3, U4,
+    DefaultAllocator, Dim, Matrix, Matrix3, RealField, SMatrix, Vector3, U1, U2, U3, U4,
 };
 
 #[cfg(feature = "serde-serialize")]
@@ -181,7 +181,7 @@ impl<R: RealField> Camera<R, IntrinsicParametersPerspective<R>> {
     }
 
     /// Create a 3x4 perspective projection matrix modeling this camera.
-    pub fn as_camera_matrix(&self) -> OMatrix<R, U3, U4> {
+    pub fn as_camera_matrix(&self) -> SMatrix<R, 3, 4> {
         let m = {
             let p33 = self.intrinsics().as_intrinsics_matrix();
             p33 * self.extrinsics().cache.qt

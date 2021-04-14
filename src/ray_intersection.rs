@@ -4,7 +4,7 @@ use nalgebra as na;
 
 use na::{
     allocator::Allocator, base::storage::Owned, DefaultAllocator, Dim, Dynamic, Matrix3, OMatrix,
-    RealField, Vector3, U1, U3,
+    RealField, SMatrix, Vector3, U1, U3,
 };
 
 use itertools::izip;
@@ -26,8 +26,8 @@ macro_rules! refsum_as_f64 {
 
 /// convert from specialized type (e.g. f64) into generic type $R
 macro_rules! despecialize {
-    ($a:expr, $R:ty, $rows:ty, $cols:ty) => {{
-        OMatrix::<$R, $rows, $cols>::from_iterator(
+    ($a:expr, $R:ty, $rows:expr, $cols:expr) => {{
+        SMatrix::<$R, $rows, $cols>::from_iterator(
             $a.as_slice().into_iter().map(|x| na::convert(*x)),
         )
     }};
@@ -64,16 +64,19 @@ where
         let d = &ray_wc.direction;
 
         // Normalize the vector length.
-        let dir =
-            nalgebra::base::Unit::new_normalize(Vector3::new(d[(0, 0)], d[(0, 1)], d[(0, 2)]));
+        let dir = nalgebra::base::Unit::new_normalize(Vector3::new(
+            d.data.0[0][0],
+            d.data.0[1][0],
+            d.data.0[2][0],
+        ));
 
         line_dirs[(i, 0)] = dir[0];
         line_dirs[(i, 1)] = dir[1];
         line_dirs[(i, 2)] = dir[2];
 
-        line_points[(i, 0)] = ray_wc.center[(0, 0)];
-        line_points[(i, 1)] = ray_wc.center[(0, 1)];
-        line_points[(i, 2)] = ray_wc.center[(0, 2)];
+        line_points[(i, 0)] = ray_wc.center.data.0[0][0];
+        line_points[(i, 1)] = ray_wc.center.data.0[1][0];
+        line_points[(i, 2)] = ray_wc.center.data.0[2][0];
     }
 
     let mut xxm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
@@ -149,7 +152,7 @@ where
     let C = Vector3::new(CX, CY, CZ);
 
     let s_f64_pinv = my_pinv(&S)?;
-    let s_pinv = despecialize!(s_f64_pinv, R, U3, U3);
+    let s_pinv = despecialize!(s_f64_pinv, R, 3, 3);
     let r: Vector3<R> = s_pinv * C;
 
     let mut result = crate::Points::new(nalgebra::OMatrix::<R, U1, U3>::zeros_generic(u1, u3));
@@ -159,7 +162,7 @@ where
     Ok(result)
 }
 
-fn my_pinv<R: RealField>(m: &OMatrix<R, U3, U3>) -> Result<OMatrix<R, U3, U3>, Error> {
+fn my_pinv<R: RealField>(m: &SMatrix<R, 3, 3>) -> Result<SMatrix<R, 3, 3>, Error> {
     Ok(
         na::linalg::SVD::try_new(*m, true, true, na::convert(1e-7), 100)
             .ok_or(Error::SvdFailed)?
@@ -172,7 +175,7 @@ fn my_pinv<R: RealField>(m: &OMatrix<R, U3, U3>) -> Result<OMatrix<R, U3, U3>, E
 
 #[cfg(test)]
 mod tests {
-    use nalgebra::{Vector3, U1, U3};
+    use nalgebra::Vector3;
 
     use crate::{Camera, ExtrinsicParameters, IntrinsicParametersPerspective, PerspectiveParams};
 
@@ -210,7 +213,7 @@ mod tests {
         );
         let cam2 = Camera::new(i2, e2);
 
-        let expected_point = Points::new(OMatrix::<_, U1, U3>::new(2.21, 3.41, 5.61));
+        let expected_point = Points::new(SMatrix::<_, 1, 3>::new(2.21, 3.41, 5.61));
 
         let image1 = cam1.world_to_pixel(&expected_point);
 

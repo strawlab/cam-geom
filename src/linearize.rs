@@ -1,13 +1,13 @@
 //! Linearize camera models by computing the Jacobian matrix.
 
 use crate::{Camera, IntrinsicParametersPerspective, Points, WorldFrame};
-use nalgebra::{storage::Storage, OMatrix, RealField, U1, U2, U3, U4};
+use nalgebra::{storage::Storage, RealField, SMatrix, U1, U3};
 
 /// Required data required for finding Jacobian of perspective camera models.
 ///
 /// Create this with the [`new()`](struct.JacobianPerspectiveCache.html#method.new) method.
 pub struct JacobianPerspectiveCache<R: RealField> {
-    m: OMatrix<R, U3, U4>,
+    m: SMatrix<R, 3, 4>,
 }
 
 impl<R: RealField> JacobianPerspectiveCache<R> {
@@ -33,10 +33,7 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
     /// coords from the projected location of `p`. In other words, for a camera
     /// model `F(x)`, if `F(p) = (a,b)` and `F(p+o) = (a,b)
     /// + Ao = (a,b) + (u,v) = (a+u,b+v)`, this function returns `A`.
-    pub fn linearize_at<STORAGE>(
-        &self,
-        p: &Points<WorldFrame, R, U1, STORAGE>,
-    ) -> OMatrix<R, U2, U3>
+    pub fn linearize_at<STORAGE>(&self, p: &Points<WorldFrame, R, U1, STORAGE>) -> SMatrix<R, 2, 3>
     where
         STORAGE: Storage<R, U1, U3>,
     {
@@ -63,13 +60,13 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
         let vy = -p[(2, 1)] * denom_sqrt * factor_v + p[(1, 1)] / denom;
         let vz = -p[(2, 2)] * denom_sqrt * factor_v + p[(1, 2)] / denom;
 
-        OMatrix::<R, U2, U3>::new(ux, uy, uz, vx, vy, vz)
+        SMatrix::<R, 2, 3>::new(ux, uy, uz, vx, vy, vz)
     }
 }
 
 #[test]
 fn test_jacobian_perspective() {
-    use nalgebra::{RowVector2, RowVector3, Unit, Vector3};
+    use nalgebra::{OMatrix, RowVector2, RowVector3, Unit, Vector3};
 
     use super::*;
     use crate::{Camera, ExtrinsicParameters, IntrinsicParametersPerspective};
@@ -115,10 +112,7 @@ fn test_jacobian_perspective() {
 
     // Get the 2D projection (in pixels) point with the linearized camera model
     let o = linearized_cam * offset;
-    let linear_prediction = RowVector2::new(
-        center_projected.x + o[0],
-        center_projected.y + o[1],
-    );
+    let linear_prediction = RowVector2::new(center_projected.x + o[0], center_projected.y + o[1]);
 
     // Check both approaches are equal
     approx::assert_relative_eq!(linear_prediction, nonlin, epsilon = nalgebra::convert(1e-4));
