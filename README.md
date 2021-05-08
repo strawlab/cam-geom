@@ -191,10 +191,9 @@ result:
 
 ## Altenatives
 
-You may also be interested in
-[rust-cv/cv-core](https://github.com/rust-cv/cv-core), which also contains
-camera models for photogrammetry. The two crates were developed independently
-without knowledge of each other.
+You may also be interested in [rust-cv/cv-pinhole](https://docs.rs/cv-pinhole),
+which also contains camera models for photogrammetry. The two crates were
+developed independently without knowledge of each other.
 
 ## Regenerate `README.md`
 
