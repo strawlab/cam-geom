@@ -232,20 +232,15 @@ where
             Const::from_usize(2),
         ));
 
-        // It seems broadcasting is not (yet) supported in nalgebra, so we loop
-        // through the data. See
-        // https://discourse.nphysics.org/t/array-broadcasting-support/375/3 .
+        // Broadcasting is not supported in nalgebra, so we loop through
+        // point-by-point. This may actually have better cache locality, and
+        // thus be faster, than doing each step sequentially on all points.
 
-        for i in 0..camera.data.nrows() {
-            let x = nalgebra::Point3::new(
-                camera.data[(i, 0)],
-                camera.data[(i, 1)],
-                camera.data[(i, 2)],
-            )
-            .to_homogeneous();
+        for (in_row, mut out_row) in camera.data.row_iter().zip(result.data.row_iter_mut()) {
+            let x = nalgebra::Point3::new(in_row[0], in_row[1], in_row[2]).to_homogeneous();
             let rst = self.cache_p * x;
-            result.data[(i, 0)] = rst[0] / rst[2];
-            result.data[(i, 1)] = rst[1] / rst[2];
+            out_row[0] = rst[0] / rst[2];
+            out_row[1] = rst[1] / rst[2];
         }
         result
     }
