@@ -263,6 +263,17 @@ impl<R: RealField, NPTS: Dim, STORAGE> Pixels<R, NPTS, STORAGE> {
     }
 }
 
+impl<R: RealField, NPTS: Dim, STORAGE> Pixels<R, NPTS, STORAGE>
+where
+    STORAGE: nalgebra::storage::Storage<R, NPTS, U2>,
+{
+    /// The number of pixels
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.data.nrows()
+    }
+}
+
 /// A coordinate system in which points and rays can be defined.
 pub trait CoordinateSystem {}
 
@@ -314,6 +325,20 @@ where
             coords: std::marker::PhantomData,
             data,
         }
+    }
+}
+
+impl<Coords, R, NPTS, STORAGE> Points<Coords, R, NPTS, STORAGE>
+where
+    Coords: CoordinateSystem,
+    R: RealField,
+    NPTS: Dim,
+    STORAGE: nalgebra::storage::Storage<R, NPTS, U3>,
+{
+    /// Return the number of individual points.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.data.nrows()
     }
 }
 
@@ -478,6 +503,21 @@ where
     }
 }
 
+impl<Coords, BType, R, NPTS, StorageMultiple> RayBundle<Coords, BType, R, NPTS, StorageMultiple>
+where
+    Coords: CoordinateSystem,
+    BType: Bundle<R>,
+    R: RealField,
+    NPTS: Dim,
+    StorageMultiple: Storage<R, NPTS, U3>,
+{
+    /// Return the number of rays in the bundle.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.data.nrows()
+    }
+}
+
 /// A single ray. Can be in any [`CoordinateSystem`](trait.CoordinateSystem.html).
 ///
 /// A `RayBundle` with only one ray can be converted to this with
@@ -622,6 +662,30 @@ mod tests {
 
     #[cfg(not(feature = "std"))]
     compile_error!("tests require std");
+
+    #[test]
+    fn impl_len() {
+        let points: Points<WorldFrame, _, _, _> = Points::new(nalgebra::Matrix2x3::new(
+            1.0, 0.0, 0.0, // point 1
+            0.0, 1.0, 0.0, // point 2
+        ));
+        assert_eq!(points.len(), 2);
+
+        let pixels = Pixels::new(nalgebra::Matrix3x2::new(
+            1.0, 0.0, // pixel 1
+            0.0, 1.0, // pixel 2
+            1.0, 1.0, // pixel 3
+        ));
+        assert_eq!(pixels.len(), 3);
+
+        let b1 = RayBundle::<WorldFrame, _, _, _, _>::new_shared_plusz_direction(
+            SMatrix::<_, 2, 3>::new(
+                1.0, 2.0, 0.0, // ray 1
+                3.0, 4.0, 0.0, // ray 2
+            ),
+        );
+        assert_eq!(b1.len(), 2);
+    }
 
     #[test]
     fn rays_shared_origin() {
