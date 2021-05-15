@@ -4,7 +4,7 @@ use nalgebra::{
     storage::{Owned, Storage},
     DefaultAllocator, RealField,
 };
-use nalgebra::{convert, Dim, OMatrix, SMatrix, Unit, Vector3, U3};
+use nalgebra::{convert, Const, Dim, OMatrix, SMatrix, Unit, Vector3};
 
 #[cfg(feature = "serde-serialize")]
 use serde::{Deserialize, Serialize};
@@ -190,15 +190,15 @@ impl<R: RealField> ExtrinsicParameters<R> {
     pub fn camera_to_world<NPTS, InStorage>(
         &self,
         cam_coords: &Points<CameraFrame, R, NPTS, InStorage>,
-    ) -> Points<WorldFrame, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> Points<WorldFrame, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         NPTS: Dim,
-        InStorage: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        InStorage: Storage<R, NPTS, Const<3>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         let mut world = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(cam_coords.data.nrows()),
-            U3::from_usize(3),
+            Const::from_usize(3),
         ));
 
         // Potential optimization: remove for loops
@@ -223,12 +223,12 @@ impl<R: RealField> ExtrinsicParameters<R> {
     pub fn ray_camera_to_world<BType, NPTS, StorageCamera>(
         &self,
         camera: &RayBundle<CameraFrame, BType, R, NPTS, StorageCamera>,
-    ) -> RayBundle<WorldFrame, BType, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> RayBundle<WorldFrame, BType, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         BType: Bundle<R>,
         NPTS: Dim,
-        StorageCamera: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        StorageCamera: Storage<R, NPTS, Const<3>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         camera.to_pose(self.cache.pose_inv)
     }
@@ -237,15 +237,15 @@ impl<R: RealField> ExtrinsicParameters<R> {
     pub fn world_to_camera<NPTS, InStorage>(
         &self,
         world: &Points<WorldFrame, R, NPTS, InStorage>,
-    ) -> Points<CameraFrame, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> Points<CameraFrame, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         NPTS: Dim,
-        InStorage: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        InStorage: Storage<R, NPTS, Const<3>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         let mut cam_coords = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(world.data.nrows()),
-            U3::from_usize(3),
+            Const::from_usize(3),
         ));
 
         // Potential optimization: remove for loops

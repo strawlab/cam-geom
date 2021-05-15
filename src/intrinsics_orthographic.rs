@@ -1,7 +1,7 @@
 use nalgebra::{
     allocator::Allocator,
     base::storage::{Owned, Storage},
-    convert, DefaultAllocator, Dim, OMatrix, RealField, U2, U3,
+    convert, Const, DefaultAllocator, Dim, OMatrix, RealField,
 };
 
 #[cfg(feature = "serde-serialize")]
@@ -79,19 +79,19 @@ where
     fn pixel_to_camera<IN, NPTS>(
         &self,
         pixels: &Pixels<R, NPTS, IN>,
-    ) -> RayBundle<CameraFrame, Self::BundleType, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> RayBundle<CameraFrame, Self::BundleType, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         Self::BundleType: Bundle<R>,
-        IN: Storage<R, NPTS, U2>,
+        IN: Storage<R, NPTS, Const<2>>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         let zero = convert(0.0);
 
         // allocate zeros, fill later
         let mut result = RayBundle::new_shared_plusz_direction(OMatrix::zeros_generic(
             NPTS::from_usize(pixels.data.nrows()),
-            U3::from_usize(3),
+            Const::from_usize(3),
         ));
 
         let origin = &mut result.data;
@@ -117,15 +117,15 @@ where
     fn camera_to_pixel<IN, NPTS>(
         &self,
         camera: &Points<CameraFrame, R, NPTS, IN>,
-    ) -> Pixels<R, NPTS, Owned<R, NPTS, U2>>
+    ) -> Pixels<R, NPTS, Owned<R, NPTS, Const<2>>>
     where
-        IN: Storage<R, NPTS, U3>,
+        IN: Storage<R, NPTS, Const<3>>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U2>,
+        DefaultAllocator: Allocator<R, NPTS, Const<2>>,
     {
         let mut result = Pixels::new(OMatrix::zeros_generic(
             NPTS::from_usize(camera.data.nrows()),
-            U2::from_usize(2),
+            Const::from_usize(2),
         ));
 
         // It seems broadcasting is not (yet) supported in nalgebra, so we loop

@@ -3,7 +3,7 @@ use nalgebra::{
     base::storage::{Owned, Storage},
     convert,
     geometry::{Point3, Rotation3, UnitQuaternion},
-    DefaultAllocator, Dim, Matrix, Matrix3, RealField, SMatrix, Vector3, U1, U2, U3, U4,
+    Const, DefaultAllocator, Dim, Matrix, Matrix3, RealField, SMatrix, Vector3,
 };
 
 #[cfg(feature = "serde-serialize")]
@@ -111,12 +111,12 @@ where
     pub fn world_to_pixel<NPTS, InStorage>(
         &self,
         world: &Points<WorldFrame, R, NPTS, InStorage>,
-    ) -> Pixels<R, NPTS, Owned<R, NPTS, U2>>
+    ) -> Pixels<R, NPTS, Owned<R, NPTS, Const<2>>>
     where
         NPTS: Dim,
-        InStorage: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U2>,
+        InStorage: Storage<R, NPTS, Const<3>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<2>>,
     {
         let camera_frame = self.extrinsics.world_to_camera(&world);
         self.intrinsics.camera_to_pixel(&camera_frame)
@@ -133,15 +133,15 @@ where
     pub fn pixel_to_world<IN, NPTS>(
         &self,
         pixels: &Pixels<R, NPTS, IN>,
-    ) -> RayBundle<WorldFrame, I::BundleType, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> RayBundle<WorldFrame, I::BundleType, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         I::BundleType: Bundle<R>,
-        IN: Storage<R, NPTS, U2>,
+        IN: Storage<R, NPTS, Const<2>>,
         NPTS: Dim,
         I::BundleType: Bundle<R>,
-        DefaultAllocator: Allocator<R, U1, U2>,
-        DefaultAllocator: Allocator<R, NPTS, U2>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<R, Const<1>, Const<2>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<2>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         // get camera frame rays
         let camera = self.intrinsics.pixel_to_camera(&pixels);
@@ -153,9 +153,11 @@ where
 
 impl<R: RealField> Camera<R, IntrinsicParametersPerspective<R>> {
     /// Create a `Camera` from a 3x4 perspective projection matrix.
-    pub fn from_perspective_matrix<S>(pmat: &Matrix<R, U3, U4, S>) -> Result<Self, Error>
+    pub fn from_perspective_matrix<S>(
+        pmat: &Matrix<R, Const<3>, Const<4>, S>,
+    ) -> Result<Self, Error>
     where
-        S: Storage<R, U3, U4> + Clone,
+        S: Storage<R, Const<3>, Const<4>> + Clone,
     {
         let m = pmat.clone().remove_column(3);
         let (rquat, k) = rq_decomposition(m)?;
@@ -302,10 +304,10 @@ pub(crate) fn is_right_handed_rotation_quat<R: RealField>(rquat: &UnitQuaternion
 }
 
 /// get the camera center from a 3x4 camera projection matrix
-fn pmat2cam_center<R, S>(p: &Matrix<R, U3, U4, S>) -> Point3<R>
+fn pmat2cam_center<R, S>(p: &Matrix<R, Const<3>, Const<4>, S>) -> Point3<R>
 where
     R: RealField + Clone,
-    S: Storage<R, U3, U4> + Clone,
+    S: Storage<R, Const<3>, Const<4>> + Clone,
 {
     let x = p.clone().remove_column(0).determinant();
     let y = -p.clone().remove_column(1).determinant();

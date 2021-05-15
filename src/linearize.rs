@@ -1,7 +1,7 @@
 //! Linearize camera models by computing the Jacobian matrix.
 
 use crate::{Camera, IntrinsicParametersPerspective, Points, WorldFrame};
-use nalgebra::{storage::Storage, RealField, SMatrix, U1, U3};
+use nalgebra::{storage::Storage, Const, RealField, SMatrix};
 
 /// Required data required for finding Jacobian of perspective camera models.
 ///
@@ -33,9 +33,12 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
     /// coords from the projected location of `p`. In other words, for a camera
     /// model `F(x)`, if `F(p) = (a,b)` and `F(p+o) = (a,b)
     /// + Ao = (a,b) + (u,v) = (a+u,b+v)`, this function returns `A`.
-    pub fn linearize_at<STORAGE>(&self, p: &Points<WorldFrame, R, U1, STORAGE>) -> SMatrix<R, 2, 3>
+    pub fn linearize_at<STORAGE>(
+        &self,
+        p: &Points<WorldFrame, R, Const<1>, STORAGE>,
+    ) -> SMatrix<R, 2, 3>
     where
-        STORAGE: Storage<R, U1, U3>,
+        STORAGE: Storage<R, Const<1>, Const<3>>,
     {
         let pt3d = &p.data;
 
@@ -99,7 +102,7 @@ fn test_jacobian_perspective() {
     let offset = Vector3::new(0.0, 0.0, 0.01);
 
     // Get the 2D projection (in pixels) of our center.
-    let center_projected: OMatrix<f64, U1, U2> = cam.world_to_pixel(&center).data;
+    let center_projected: OMatrix<f64, Const<1>, Const<2>> = cam.world_to_pixel(&center).data;
 
     // Linearize the camera model around the center 3D point.
     let linearized_cam = cam_jac.linearize_at(&center);

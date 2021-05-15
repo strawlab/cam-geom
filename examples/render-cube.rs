@@ -3,8 +3,8 @@
 
 use cam_geom::*;
 use nalgebra::{
-    allocator::Allocator, storage::Storage, DefaultAllocator, Dim, Matrix, SMatrix, Unit, Vector3,
-    U1, U2, U3,
+    allocator::Allocator, storage::Storage, Const, DefaultAllocator, Dim, Matrix, SMatrix, Unit,
+    Vector3,
 };
 
 /// Create a perspective camera.
@@ -66,9 +66,12 @@ impl SvgWriter {
             segs: Vec::new(),
         }
     }
-    fn add_edge<S>(&mut self, pt0: &Matrix<f64, U1, U2, S>, pt1: &Matrix<f64, U1, U2, S>)
-    where
-        S: Storage<f64, U1, U2>,
+    fn add_edge<S>(
+        &mut self,
+        pt0: &Matrix<f64, Const<1>, Const<2>, S>,
+        pt1: &Matrix<f64, Const<1>, Const<2>, S>,
+    ) where
+        S: Storage<f64, Const<1>, Const<2>>,
     {
         self.xmin = self.xmin.min(pt0[0]);
         self.xmin = self.xmin.min(pt1[0]);
@@ -151,9 +154,9 @@ fn render_wireframe<NPTS, I, S>(
 where
     NPTS: Dim,
     I: IntrinsicParameters<f64>,
-    S: Storage<f64, NPTS, U3>,
-    DefaultAllocator: Allocator<f64, NPTS, U3>,
-    DefaultAllocator: Allocator<f64, NPTS, U2>,
+    S: Storage<f64, NPTS, Const<3>>,
+    DefaultAllocator: Allocator<f64, NPTS, Const<3>>,
+    DefaultAllocator: Allocator<f64, NPTS, Const<2>>,
 {
     // Project the original 3D coordinates to 2D pixel coordinates.
     let pixel_coords = cam.world_to_pixel(&verts);

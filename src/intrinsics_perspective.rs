@@ -2,7 +2,7 @@ use nalgebra::{
     allocator::Allocator,
     convert,
     storage::{Owned, Storage},
-    DefaultAllocator, Dim, Matrix, OMatrix, RealField, SMatrix, SliceStorage, U1, U2, U3,
+    Const, DefaultAllocator, Dim, Matrix, OMatrix, RealField, SMatrix, SliceStorage,
 };
 
 #[cfg(feature = "serde-serialize")]
@@ -165,7 +165,8 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
     #[inline]
     pub(crate) fn as_intrinsics_matrix<'a>(
         &'a self,
-    ) -> Matrix<R, U3, U3, SliceStorage<'a, R, U3, U3, U1, U3>> {
+    ) -> Matrix<R, Const<3>, Const<3>, SliceStorage<'a, R, Const<3>, Const<3>, Const<1>, Const<3>>>
+    {
         // TODO: implement similar functionality for orthographic camera and
         // make a new trait which exposes this functionality. Note that not all
         // intrinsic parameter implementations will be able to implement this
@@ -183,19 +184,19 @@ where
     fn pixel_to_camera<IN, NPTS>(
         &self,
         pixels: &Pixels<R, NPTS, IN>,
-    ) -> RayBundle<CameraFrame, Self::BundleType, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> RayBundle<CameraFrame, Self::BundleType, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         Self::BundleType: Bundle<R>,
-        IN: Storage<R, NPTS, U2>,
+        IN: Storage<R, NPTS, Const<2>>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         let one = convert(1.0);
 
         // allocate zeros, fill later
         let mut result = RayBundle::new_shared_zero_origin(OMatrix::zeros_generic(
             NPTS::from_usize(pixels.data.nrows()),
-            U3::from_usize(3),
+            Const::from_usize(3),
         ));
 
         let cam_dir = &mut result.data;
@@ -220,15 +221,15 @@ where
     fn camera_to_pixel<IN, NPTS>(
         &self,
         camera: &Points<CameraFrame, R, NPTS, IN>,
-    ) -> Pixels<R, NPTS, Owned<R, NPTS, U2>>
+    ) -> Pixels<R, NPTS, Owned<R, NPTS, Const<2>>>
     where
-        IN: Storage<R, NPTS, U3>,
+        IN: Storage<R, NPTS, Const<3>>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U2>,
+        DefaultAllocator: Allocator<R, NPTS, Const<2>>,
     {
         let mut result = Pixels::new(OMatrix::zeros_generic(
             NPTS::from_usize(camera.data.nrows()),
-            U2::from_usize(2),
+            Const::from_usize(2),
         ));
 
         // It seems broadcasting is not (yet) supported in nalgebra, so we loop

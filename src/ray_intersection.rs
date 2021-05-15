@@ -3,8 +3,8 @@
 use nalgebra as na;
 
 use na::{
-    allocator::Allocator, base::storage::Owned, DefaultAllocator, Dim, Dynamic, Matrix3, OMatrix,
-    RealField, SMatrix, Vector3, U1, U3,
+    allocator::Allocator, base::storage::Owned, Const, DefaultAllocator, Dim, Dynamic, Matrix3,
+    OMatrix, RealField, SMatrix, Vector3,
 };
 
 use itertools::izip;
@@ -34,7 +34,7 @@ macro_rules! despecialize {
 }
 
 /// A single point. (This is a `Points` instance defined to have only one point).
-pub type SinglePoint<Coords, R> = Points<Coords, R, U1, Owned<R, U1, U3>>;
+pub type SinglePoint<Coords, R> = Points<Coords, R, Const<1>, Owned<R, Const<1>, Const<3>>>;
 
 /// Return the 3D point which is the best intersection of rays.
 #[allow(non_snake_case)]
@@ -44,20 +44,20 @@ pub fn best_intersection_of_rays<Coords, R>(
 where
     Coords: CoordinateSystem,
     R: RealField,
-    DefaultAllocator: Allocator<R, Dynamic, U3>,
-    DefaultAllocator: Allocator<R, U1, Dynamic>,
-    DefaultAllocator: Allocator<R, U1, U3>,
+    DefaultAllocator: Allocator<R, Dynamic, Const<3>>,
+    DefaultAllocator: Allocator<R, Const<1>, Dynamic>,
+    DefaultAllocator: Allocator<R, Const<1>, Const<3>>,
 {
     if rays.len() < 2 {
         return Err(Error::MinimumTwoRaysNeeded);
     }
 
     let npts = Dynamic::new(rays.len());
-    let u1 = U1::from_usize(1);
-    let u3 = U3::from_usize(3);
+    let u1 = Const::from_usize(1);
+    let u3 = Const::from_usize(3);
 
-    let mut line_dirs = OMatrix::<R, Dynamic, U3>::zeros_generic(npts, u3);
-    let mut line_points = OMatrix::<R, Dynamic, U3>::zeros_generic(npts, u3);
+    let mut line_dirs = OMatrix::<R, Dynamic, Const<3>>::zeros_generic(npts, u3);
+    let mut line_points = OMatrix::<R, Dynamic, Const<3>>::zeros_generic(npts, u3);
 
     for i in 0..rays.len() {
         let ray_wc = rays.get(i).unwrap();
@@ -79,12 +79,12 @@ where
         line_points[(i, 2)] = ray_wc.center.data.0[2][0];
     }
 
-    let mut xxm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut yym1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut zzm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut xy = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut xz = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut yz = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut xxm1 = OMatrix::<R, Const<1>, Dynamic>::zeros_generic(u1, npts);
+    let mut yym1 = OMatrix::<R, Const<1>, Dynamic>::zeros_generic(u1, npts);
+    let mut zzm1 = OMatrix::<R, Const<1>, Dynamic>::zeros_generic(u1, npts);
+    let mut xy = OMatrix::<R, Const<1>, Dynamic>::zeros_generic(u1, npts);
+    let mut xz = OMatrix::<R, Const<1>, Dynamic>::zeros_generic(u1, npts);
+    let mut yz = OMatrix::<R, Const<1>, Dynamic>::zeros_generic(u1, npts);
 
     // TODO element-wise add, mul with nalgebra matrices
 
@@ -155,7 +155,9 @@ where
     let s_pinv = despecialize!(s_f64_pinv, R, 3, 3);
     let r: Vector3<R> = s_pinv * C;
 
-    let mut result = crate::Points::new(nalgebra::OMatrix::<R, U1, U3>::zeros_generic(u1, u3));
+    let mut result = crate::Points::new(nalgebra::OMatrix::<R, Const<1>, Const<3>>::zeros_generic(
+        u1, u3,
+    ));
     for j in 0..3 {
         result.data[(0, j)] = r[j];
     }

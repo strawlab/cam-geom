@@ -191,8 +191,7 @@ use serde::{Deserialize, Serialize};
 use nalgebra::{
     allocator::Allocator,
     storage::{Owned, Storage},
-    DefaultAllocator, Dim, DimName, Isometry3, Matrix, Point3, RealField, SMatrix, Vector3, U1, U2,
-    U3,
+    Const, DefaultAllocator, Dim, DimName, Isometry3, Matrix, Point3, RealField, SMatrix, Vector3,
 };
 
 #[cfg(feature = "std")]
@@ -252,20 +251,20 @@ impl std::fmt::Display for Error {
 #[derive(Clone)]
 pub struct Pixels<R: RealField, NPTS: Dim, STORAGE> {
     /// The matrix storing pixel locations.
-    pub data: nalgebra::Matrix<R, NPTS, U2, STORAGE>,
+    pub data: nalgebra::Matrix<R, NPTS, Const<2>, STORAGE>,
 }
 
 impl<R: RealField, NPTS: Dim, STORAGE> Pixels<R, NPTS, STORAGE> {
     /// Create a new Pixels instance
     #[inline]
-    pub fn new(data: nalgebra::Matrix<R, NPTS, U2, STORAGE>) -> Self {
+    pub fn new(data: nalgebra::Matrix<R, NPTS, Const<2>, STORAGE>) -> Self {
         Self { data }
     }
 }
 
 impl<R: RealField, NPTS: Dim, STORAGE> Pixels<R, NPTS, STORAGE>
 where
-    STORAGE: nalgebra::storage::Storage<R, NPTS, U2>,
+    STORAGE: nalgebra::storage::Storage<R, NPTS, Const<2>>,
 {
     /// The number of pixels
     #[inline]
@@ -309,7 +308,7 @@ pub use coordinate_system::{CameraFrame, WorldFrame};
 pub struct Points<Coords: CoordinateSystem, R: RealField, NPTS: Dim, STORAGE> {
     coords: std::marker::PhantomData<Coords>,
     /// The matrix storing point locations.
-    pub data: nalgebra::Matrix<R, NPTS, U3, STORAGE>,
+    pub data: nalgebra::Matrix<R, NPTS, Const<3>, STORAGE>,
 }
 
 impl<Coords, R, NPTS, STORAGE> Points<Coords, R, NPTS, STORAGE>
@@ -320,7 +319,7 @@ where
 {
     /// Create a new Points instance from the underlying storage.
     #[inline]
-    pub fn new(data: nalgebra::Matrix<R, NPTS, U3, STORAGE>) -> Self {
+    pub fn new(data: nalgebra::Matrix<R, NPTS, Const<3>, STORAGE>) -> Self {
         Self {
             coords: std::marker::PhantomData,
             data,
@@ -333,7 +332,7 @@ where
     Coords: CoordinateSystem,
     R: RealField,
     NPTS: Dim,
-    STORAGE: nalgebra::storage::Storage<R, NPTS, U3>,
+    STORAGE: nalgebra::storage::Storage<R, NPTS, Const<3>>,
 {
     /// Return the number of individual points.
     #[inline]
@@ -354,11 +353,11 @@ where
     BType: Bundle<R>,
     R: RealField,
     NPTS: Dim,
-    StorageMultiple: Storage<R, NPTS, U3>,
+    StorageMultiple: Storage<R, NPTS, Const<3>>,
 {
     coords: std::marker::PhantomData<Coords>,
     /// The matrix storing the ray data.
-    pub data: Matrix<R, NPTS, U3, StorageMultiple>,
+    pub data: Matrix<R, NPTS, Const<3>, StorageMultiple>,
     bundle_type: BType,
 }
 
@@ -368,23 +367,23 @@ where
     BType: Bundle<R>,
     R: RealField,
     NPTS: DimName,
-    StorageMultiple: Storage<R, NPTS, U3>,
-    DefaultAllocator: Allocator<R, NPTS, U3>,
+    StorageMultiple: Storage<R, NPTS, Const<3>>,
+    DefaultAllocator: Allocator<R, NPTS, Const<3>>,
 {
     /// get directions of each ray in bundle
     #[inline]
-    pub fn directions(&self) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>> {
+    pub fn directions(&self) -> Matrix<R, NPTS, Const<3>, Owned<R, NPTS, Const<3>>> {
         self.bundle_type.directions(&self.data)
     }
 
     /// get centers (origins) of each ray in bundle
     #[inline]
-    pub fn centers(&self) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>> {
+    pub fn centers(&self) -> Matrix<R, NPTS, Const<3>, Owned<R, NPTS, Const<3>>> {
         self.bundle_type.centers(&self.data)
     }
 }
 
-impl<Coords, BType, R> RayBundle<Coords, BType, R, U1, Owned<R, U1, U3>>
+impl<Coords, BType, R> RayBundle<Coords, BType, R, Const<1>, Owned<R, Const<1>, Const<3>>>
 where
     Coords: CoordinateSystem,
     BType: Bundle<R>,
@@ -403,14 +402,14 @@ where
     Coords: CoordinateSystem,
     R: RealField,
     NPTS: Dim,
-    StorageMultiple: Storage<R, NPTS, U3>,
+    StorageMultiple: Storage<R, NPTS, Const<3>>,
 {
     /// Create a new RayBundle instance in which all rays share origin at zero.
     ///
     /// The number of points allocated is given by the `npts` parameter, which
     /// should agree with the `NPTS` type. The coordinate system is given by the
     /// `Coords` type.
-    pub fn new_shared_zero_origin(data: Matrix<R, NPTS, U3, StorageMultiple>) -> Self {
+    pub fn new_shared_zero_origin(data: Matrix<R, NPTS, Const<3>, StorageMultiple>) -> Self {
         let bundle_type = crate::ray_bundle_types::SharedOriginRayBundle::new_shared_zero_origin();
         Self::new(bundle_type, data)
     }
@@ -428,14 +427,14 @@ where
     Coords: CoordinateSystem,
     R: RealField,
     NPTS: Dim,
-    StorageMultiple: Storage<R, NPTS, U3>,
+    StorageMultiple: Storage<R, NPTS, Const<3>>,
 {
     /// Create a new RayBundle instance in which all rays share +z direction.
     ///
     /// The number of points allocated is given by the `npts` parameter, which
     /// should agree with the `NPTS` type. The coordinate system is given by the
     /// `Coords` type.
-    pub fn new_shared_plusz_direction(data: Matrix<R, NPTS, U3, StorageMultiple>) -> Self {
+    pub fn new_shared_plusz_direction(data: Matrix<R, NPTS, Const<3>, StorageMultiple>) -> Self {
         let bundle_type =
             crate::ray_bundle_types::SharedDirectionRayBundle::new_plusz_shared_direction();
         Self::new(bundle_type, data)
@@ -448,14 +447,14 @@ where
     BType: Bundle<R>,
     R: RealField,
     NPTS: Dim,
-    StorageMultiple: Storage<R, NPTS, U3>,
+    StorageMultiple: Storage<R, NPTS, Const<3>>,
 {
     /// Create a new RayBundle instance from the underlying storage.
     ///
     /// The coordinate system is given by the `Coords` type and the bundle type
     /// (e.g. shared origin or shared direction) is given by the `BType`.
     #[inline]
-    fn new(bundle_type: BType, data: nalgebra::Matrix<R, NPTS, U3, StorageMultiple>) -> Self {
+    fn new(bundle_type: BType, data: nalgebra::Matrix<R, NPTS, Const<3>, StorageMultiple>) -> Self {
         Self {
             coords: std::marker::PhantomData,
             data,
@@ -468,9 +467,9 @@ where
     /// The distance of the point from the ray bundle center is not definted and
     /// can be arbitrary.
     #[inline]
-    pub fn point_on_ray(&self) -> Points<Coords, R, NPTS, Owned<R, NPTS, U3>>
+    pub fn point_on_ray(&self) -> Points<Coords, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         self.bundle_type.point_on_ray(&self.data)
     }
@@ -480,9 +479,9 @@ where
     pub fn point_on_ray_at_distance(
         &self,
         distance: R,
-    ) -> Points<Coords, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> Points<Coords, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         self.bundle_type
             .point_on_ray_at_distance(&self.data, distance)
@@ -492,12 +491,12 @@ where
     fn to_pose<OutFrame>(
         &self,
         pose: Isometry3<R>,
-    ) -> RayBundle<OutFrame, BType, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> RayBundle<OutFrame, BType, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         R: RealField,
         NPTS: Dim,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>,
     {
         self.bundle_type.to_pose(pose, &self.data)
     }
@@ -509,7 +508,7 @@ where
     BType: Bundle<R>,
     R: RealField,
     NPTS: Dim,
-    StorageMultiple: Storage<R, NPTS, U3>,
+    StorageMultiple: Storage<R, NPTS, Const<3>>,
 {
     /// Return the number of rays in the bundle.
     #[inline]
@@ -559,12 +558,12 @@ where
     /// this will nevertheless copy the single direction `NPTS` times.
     fn directions<'a, NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
-    ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
+        self_data: &'a Matrix<R, NPTS, Const<3>, StorageIn>,
+    ) -> Matrix<R, NPTS, Const<3>, Owned<R, NPTS, Const<3>>>
     where
         NPTS: DimName,
-        StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        StorageIn: Storage<R, NPTS, Const<3>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>;
 
     /// Get centers of each ray in bundle.
     ///
@@ -573,12 +572,12 @@ where
     /// this will nevertheless copy the single center `NPTS` times.
     fn centers<'a, NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
-    ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
+        self_data: &'a Matrix<R, NPTS, Const<3>, StorageIn>,
+    ) -> Matrix<R, NPTS, Const<3>, Owned<R, NPTS, Const<3>>>
     where
         NPTS: DimName,
-        StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        StorageIn: Storage<R, NPTS, Const<3>>,
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>;
 
     /// Return points on on the input rays.
     ///
@@ -586,41 +585,41 @@ where
     /// can be arbitrary.
     fn point_on_ray<NPTS, StorageIn, OutFrame>(
         &self,
-        self_data: &Matrix<R, NPTS, U3, StorageIn>,
-    ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, U3>>
+        self_data: &Matrix<R, NPTS, Const<3>, StorageIn>,
+    ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         Self: Sized,
         NPTS: Dim,
-        StorageIn: Storage<R, NPTS, U3>,
+        StorageIn: Storage<R, NPTS, Const<3>>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>;
 
     /// Return points on on the input rays at a defined distance from the origin(s).
     fn point_on_ray_at_distance<NPTS, StorageIn, OutFrame>(
         &self,
-        self_data: &Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, Const<3>, StorageIn>,
         distance: R,
-    ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         Self: Sized,
         NPTS: Dim,
-        StorageIn: Storage<R, NPTS, U3>,
+        StorageIn: Storage<R, NPTS, Const<3>>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>;
 
     /// Convert the input rays by the pose given.
     fn to_pose<NPTS, StorageIn, OutFrame>(
         &self,
         pose: Isometry3<R>,
-        self_data: &Matrix<R, NPTS, U3, StorageIn>,
-    ) -> RayBundle<OutFrame, Self, R, NPTS, Owned<R, NPTS, U3>>
+        self_data: &Matrix<R, NPTS, Const<3>, StorageIn>,
+    ) -> RayBundle<OutFrame, Self, R, NPTS, Owned<R, NPTS, Const<3>>>
     where
         Self: Sized,
         R: RealField,
         NPTS: Dim,
-        StorageIn: Storage<R, NPTS, U3>,
+        StorageIn: Storage<R, NPTS, Const<3>>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>;
 }
 
 /// A geometric model of camera coordinates to pixels (and vice versa).
@@ -635,24 +634,30 @@ where
     fn pixel_to_camera<IN, NPTS>(
         &self,
         pixels: &Pixels<R, NPTS, IN>,
-    ) -> RayBundle<coordinate_system::CameraFrame, Self::BundleType, R, NPTS, Owned<R, NPTS, U3>>
+    ) -> RayBundle<
+        coordinate_system::CameraFrame,
+        Self::BundleType,
+        R,
+        NPTS,
+        Owned<R, NPTS, Const<3>>,
+    >
     where
         Self::BundleType: Bundle<R>,
-        IN: Storage<R, NPTS, U2>,
+        IN: Storage<R, NPTS, Const<2>>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, U1, U2>, // needed to make life easy for implementors
-        DefaultAllocator: Allocator<R, NPTS, U2>, // needed to make life easy for implementors
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<R, Const<1>, Const<2>>, // needed to make life easy for implementors
+        DefaultAllocator: Allocator<R, NPTS, Const<2>>, // needed to make life easy for implementors
+        DefaultAllocator: Allocator<R, NPTS, Const<3>>;
 
     /// project camera coords to pixel coordinates
     fn camera_to_pixel<IN, NPTS>(
         &self,
         camera: &Points<coordinate_system::CameraFrame, R, NPTS, IN>,
-    ) -> Pixels<R, NPTS, Owned<R, NPTS, U2>>
+    ) -> Pixels<R, NPTS, Owned<R, NPTS, Const<2>>>
     where
-        IN: Storage<R, NPTS, U3>,
+        IN: Storage<R, NPTS, Const<3>>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U2>;
+        DefaultAllocator: Allocator<R, NPTS, Const<2>>;
 }
 
 #[cfg(test)]
@@ -774,14 +779,14 @@ mod tests {
     }
 
     fn assert_on_line<R, S1, S2, S3>(
-        line_a: Matrix<R, U1, U3, S1>,
-        line_b: Matrix<R, U1, U3, S2>,
-        test_pt: Matrix<R, U1, U3, S3>,
+        line_a: Matrix<R, Const<1>, Const<3>, S1>,
+        line_b: Matrix<R, Const<1>, Const<3>, S2>,
+        test_pt: Matrix<R, Const<1>, Const<3>, S3>,
     ) where
         R: RealField,
-        S1: Storage<R, U1, U3>,
-        S2: Storage<R, U1, U3>,
-        S3: Storage<R, U1, U3>,
+        S1: Storage<R, Const<1>, Const<3>>,
+        S2: Storage<R, Const<1>, Const<3>>,
+        S3: Storage<R, Const<1>, Const<3>>,
     {
         let dir = &line_b - &line_a;
         let testx = &test_pt - &line_a;
