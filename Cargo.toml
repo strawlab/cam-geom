@@ -9,6 +9,7 @@ readme = "README.md"
 repository = "https://github.com/strawlab/cam-geom"
 keywords = ["computer", "vision", "photogrammetry"]
 categories = ["algorithms", "computer-vision", "no-std", "science", "science::robotics"]
+resolver = "2"
 
 [dependencies]
 nalgebra = {version="0.26", default-features=false, features=["libm"]}
@@ -19,6 +20,7 @@ serde = {version="1.0", default-features=false, features=["derive"], optional=tr
 
 [dev-dependencies]
 serde_json = "1.0"
+criterion = "0.3"
 
 [features]
 default = ["std"]
@@ -28,3 +30,7 @@ serde-serialize = ["serde", "nalgebra/serde-serialize"]
 
 [package.metadata.docs.rs]
 features = ["serde-serialize"]
+
+[[bench]]
+name = "my_benchmark"
+harness = false
