@@ -248,19 +248,13 @@ impl<R: RealField> ExtrinsicParameters<R> {
             U3::from_usize(3),
         ));
 
-        // Potential optimization: remove for loops
         let in_mult = &world.data;
         let out_mult = &mut cam_coords.data;
 
-        for i in 0..in_mult.nrows() {
-            let tmp = self.cache.pose.transform_point(&Point3::new(
-                in_mult[(i, 0)],
-                in_mult[(i, 1)],
-                in_mult[(i, 2)],
-            ));
-            for j in 0..3 {
-                out_mult[(i, j)] = tmp[j];
-            }
+        for (in_row, mut out_row) in in_mult.row_iter().zip(out_mult.row_iter_mut()) {
+            let pt = Point3::new(in_row[0], in_row[1], in_row[2]);
+            let tmp = self.cache.pose.transform_point(&pt);
+            out_row.tr_copy_from(&tmp.coords);
         }
         cam_coords
     }
