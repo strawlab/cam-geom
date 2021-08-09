@@ -11,7 +11,7 @@ keywords = ["computer", "vision", "photogrammetry"]
 categories = ["algorithms", "computer-vision", "no-std", "science", "science::robotics"]
 
 [dependencies]
-nalgebra = {version="0.28", default-features=false, features=["libm"]}
+nalgebra = {version="0.29", default-features=false, features=["libm"]}
 approx = {version="0.5", default-features=false}
 num-iter = {version="0.1.40", default-features=false, optional=true}
 itertools = {version="0.10", default-features=false}
