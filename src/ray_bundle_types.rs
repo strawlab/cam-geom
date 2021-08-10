@@ -20,9 +20,9 @@ where
     #[inline]
     pub fn new_shared_zero_origin() -> Self {
         // center is at (0,0,0)
-        let zero = nalgebra::convert(0.0);
+        let zero: R = nalgebra::convert(0.0);
         Self {
-            center: Point3::new(zero, zero, zero),
+            center: Point3::new(zero.clone(), zero.clone(), zero.clone()),
         }
     }
 }
@@ -37,7 +37,7 @@ where
         Coords: CoordinateSystem,
     {
         Ray {
-            direction: *self_data,
+            direction: self_data.clone(),
             center: self.center.coords.transpose(),
             c: std::marker::PhantomData,
         }
@@ -56,7 +56,7 @@ where
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
-                result[(i, j)] = self_data[(i, j)];
+                result[(i, j)] = self_data[(i, j)].clone();
             }
         }
         result
@@ -75,7 +75,7 @@ where
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
-                result[(i, j)] = self.center[j];
+                result[(i, j)] = self.center[j].clone();
             }
         }
         result
@@ -87,7 +87,6 @@ where
     ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, U3>>
     where
         Self: Sized,
-        R: RealField,
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
@@ -97,10 +96,14 @@ where
             NPTS::from_usize(directions.nrows()),
             U3::from_usize(3),
         ));
-        let center = [self.center[0], self.center[1], self.center[2]];
+        let center = [
+            self.center[0].clone(),
+            self.center[1].clone(),
+            self.center[2].clone(),
+        ];
         for i in 0..directions.nrows() {
             for j in 0..3 {
-                result.data[(i, j)] = center[j] + directions[(i, j)];
+                result.data[(i, j)] = center[j].clone() + directions[(i, j)].clone();
             }
         }
         result
@@ -113,7 +116,6 @@ where
     ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, U3>>
     where
         Self: Sized,
-        R: RealField,
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
@@ -123,16 +125,21 @@ where
             NPTS::from_usize(directions.nrows()),
             U3::from_usize(3),
         ));
-        let center = [self.center[0], self.center[1], self.center[2]];
+        let center = [
+            self.center[0].clone(),
+            self.center[1].clone(),
+            self.center[2].clone(),
+        ];
         for i in 0..directions.nrows() {
-            let dx = directions[(i, 0)];
-            let dy = directions[(i, 1)];
-            let dz = directions[(i, 2)];
-            let mag2 = dx * dx + dy * dy + dz * dz;
+            let dx = directions[(i, 0)].clone();
+            let dy = directions[(i, 1)].clone();
+            let dz = directions[(i, 2)].clone();
+            let mag2 = dx.clone() * dx + dy.clone() * dy + dz.clone() * dz;
             let mag = mag2.sqrt();
-            let scale = distance / mag;
+            let scale = distance.clone() / mag;
             for j in 0..3 {
-                result.data[(i, j)] = center[j] + scale * directions[(i, j)];
+                result.data[(i, j)] =
+                    center[j].clone() + scale.clone() * directions[(i, j)].clone();
             }
         }
         result
@@ -144,7 +151,6 @@ where
         self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> RayBundle<OutFrame, Self, R, NPTS, Owned<R, NPTS, U3>>
     where
-        R: RealField,
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
@@ -163,7 +169,7 @@ where
             let orig_vec = self_data.row(i).transpose();
             let new_vec = pose.transform_vector(&orig_vec);
             for j in 0..3 {
-                reposed.data[(i, j)] = new_vec[j];
+                reposed.data[(i, j)] = new_vec[j].clone();
             }
         }
 
@@ -196,7 +202,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
     {
         Ray {
             direction: self.direction.transpose(),
-            center: *self_data,
+            center: self_data.clone(),
             c: std::marker::PhantomData,
         }
     }
@@ -214,7 +220,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
-                result[(i, j)] = self.direction[j];
+                result[(i, j)] = self.direction[j].clone();
             }
         }
         result
@@ -233,7 +239,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
         for i in 0..self_data.nrows() {
             for j in 0..3 {
-                result[(i, j)] = self_data[(i, j)];
+                result[(i, j)] = self_data[(i, j)].clone();
             }
         }
         result
@@ -245,7 +251,6 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
     ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, U3>>
     where
         Self: Sized,
-        R: RealField,
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
@@ -255,10 +260,14 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
             NPTS::from_usize(centers.nrows()),
             U3::from_usize(3),
         ));
-        let direction = [self.direction[0], self.direction[1], self.direction[2]];
+        let direction = [
+            self.direction[0].clone(),
+            self.direction[1].clone(),
+            self.direction[2].clone(),
+        ];
         for i in 0..centers.nrows() {
             for j in 0..3 {
-                result.data[(i, j)] = direction[j] + centers[(i, j)];
+                result.data[(i, j)] = direction[j].clone() + centers[(i, j)].clone();
             }
         }
         result
@@ -271,7 +280,6 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
     ) -> Points<OutFrame, R, NPTS, Owned<R, NPTS, U3>>
     where
         Self: Sized,
-        R: RealField,
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
@@ -283,17 +291,17 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         ));
 
         let d = &self.direction;
-        let dx = d[0];
-        let dy = d[1];
-        let dz = d[2];
-        let mag2 = dx * dx + dy * dy + dz * dz;
+        let dx = d[0].clone();
+        let dy = d[1].clone();
+        let dz = d[2].clone();
+        let mag2 = dx.clone() * dx.clone() + dy.clone() * dy.clone() + dz.clone() * dz.clone();
         let mag = mag2.sqrt();
         let scale = distance / mag;
-        let dist_dir = Vector3::new(scale * dx, scale * dy, scale * dz);
+        let dist_dir = Vector3::new(scale.clone() * dx, scale.clone() * dy, scale.clone() * dz);
 
         for i in 0..centers.nrows() {
             for j in 0..3 {
-                result.data[(i, j)] = dist_dir[j] + centers[(i, j)];
+                result.data[(i, j)] = dist_dir[j].clone() + centers[(i, j)].clone();
             }
         }
         result
@@ -305,7 +313,6 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> RayBundle<OutFrame, Self, R, NPTS, Owned<R, NPTS, U3>>
     where
-        R: RealField,
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
@@ -328,7 +335,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
             };
             let new_point = pose.transform_point(&orig_point);
             for j in 0..3 {
-                reposed.data[(i, j)] = new_point[j];
+                reposed.data[(i, j)] = new_point[j].clone();
             }
         }
 

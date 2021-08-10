@@ -21,7 +21,7 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
         // flip sign if focal length < 0
         let m = if m[(0, 0)] < nalgebra::zero() { -m } else { m };
 
-        let m = m / m[(2, 3)]; // normalize
+        let m = m.clone() / m[(2, 3)].clone(); // normalize
 
         Self { m }
     }
@@ -42,23 +42,38 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
         // See pinhole_jacobian_demo.py in flydra for the original source of this. It has
         // been manually factored it a bit futher.
         // https://github.com/strawlab/flydra/blob/3ab1b5843b095d73f796bf707e6680b923993899/flydra_core/sympy_demo/pinhole_jacobian_demo.py
-        let x = pt3d[(0, 0)];
-        let y = pt3d[(0, 1)];
-        let z = pt3d[(0, 2)];
+        let x = pt3d[(0, 0)].clone();
+        let y = pt3d[(0, 1)].clone();
+        let z = pt3d[(0, 2)].clone();
 
         let p = &self.m;
-        let denom = p[(2, 0)] * x + p[(2, 1)] * y + p[(2, 2)] * z + p[(2, 3)];
-        let denom_sqrt = denom.powi(-2);
+        let denom = p[(2, 0)].clone() * x.clone()
+            + p[(2, 1)].clone() * y.clone()
+            + p[(2, 2)].clone() * z.clone()
+            + p[(2, 3)].clone();
+        let denom_sqrt = denom.clone().powi(-2);
 
-        let factor_u = p[(0, 0)] * x + p[(0, 1)] * y + p[(0, 2)] * z + p[(0, 3)];
-        let ux = -p[(2, 0)] * denom_sqrt * factor_u + p[(0, 0)] / denom;
-        let uy = -p[(2, 1)] * denom_sqrt * factor_u + p[(0, 1)] / denom;
-        let uz = -p[(2, 2)] * denom_sqrt * factor_u + p[(0, 2)] / denom;
+        let factor_u = p[(0, 0)].clone() * x.clone()
+            + p[(0, 1)].clone() * y.clone()
+            + p[(0, 2)].clone() * z.clone()
+            + p[(0, 3)].clone();
+        let ux = -p[(2, 0)].clone() * denom_sqrt.clone() * factor_u.clone()
+            + p[(0, 0)].clone() / denom.clone();
+        let uy = -p[(2, 1)].clone() * denom_sqrt.clone() * factor_u.clone()
+            + p[(0, 1)].clone() / denom.clone();
+        let uz = -p[(2, 2)].clone() * denom_sqrt.clone() * factor_u.clone()
+            + p[(0, 2)].clone() / denom.clone();
 
-        let factor_v = p[(1, 0)] * x + p[(1, 1)] * y + p[(1, 2)] * z + p[(1, 3)];
-        let vx = -p[(2, 0)] * denom_sqrt * factor_v + p[(1, 0)] / denom;
-        let vy = -p[(2, 1)] * denom_sqrt * factor_v + p[(1, 1)] / denom;
-        let vz = -p[(2, 2)] * denom_sqrt * factor_v + p[(1, 2)] / denom;
+        let factor_v = p[(1, 0)].clone() * x.clone()
+            + p[(1, 1)].clone() * y.clone()
+            + p[(1, 2)].clone() * z.clone()
+            + p[(1, 3)].clone();
+        let vx = -p[(2, 0)].clone() * denom_sqrt.clone() * factor_v.clone()
+            + p[(1, 0)].clone() / denom.clone();
+        let vy = -p[(2, 1)].clone() * denom_sqrt.clone() * factor_v.clone()
+            + p[(1, 1)].clone() / denom.clone();
+        let vz = -p[(2, 2)].clone() * denom_sqrt.clone() * factor_v.clone()
+            + p[(1, 2)].clone() / denom.clone();
 
         SMatrix::<R, 2, 3>::new(ux, uy, uz, vx, vy, vz)
     }

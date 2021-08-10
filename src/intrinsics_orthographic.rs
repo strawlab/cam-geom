@@ -86,7 +86,7 @@ where
         NPTS: Dim,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let zero = convert(0.0);
+        let zero: R = convert(0.0);
 
         // allocate zeros, fill later
         let mut result = RayBundle::new_shared_plusz_direction(OMatrix::zeros_generic(
@@ -101,15 +101,15 @@ where
         // https://discourse.nphysics.org/t/array-broadcasting-support/375/3 .
 
         for i in 0..pixels.data.nrows() {
-            let u = pixels.data[(i, 0)];
-            let v = pixels.data[(i, 1)];
+            let u = pixels.data[(i, 0)].clone();
+            let v = pixels.data[(i, 1)].clone();
 
-            let x: R = (u - self.params.cx) / self.params.sx;
-            let y: R = (v - self.params.cy) / self.params.sy;
+            let x: R = (u - self.params.cx.clone()) / self.params.sx.clone();
+            let y: R = (v - self.params.cy.clone()) / self.params.sy.clone();
 
             origin[(i, 0)] = x;
             origin[(i, 1)] = y;
-            origin[(i, 2)] = zero;
+            origin[(i, 2)] = zero.clone();
         }
         result
     }
@@ -133,8 +133,10 @@ where
         // https://discourse.nphysics.org/t/array-broadcasting-support/375/3 .
 
         for i in 0..camera.data.nrows() {
-            result.data[(i, 0)] = camera.data[(i, 0)] * self.params.sx + self.params.cx;
-            result.data[(i, 1)] = camera.data[(i, 1)] * self.params.sy + self.params.cy;
+            result.data[(i, 0)] =
+                camera.data[(i, 0)].clone() * self.params.sx.clone() + self.params.cx.clone();
+            result.data[(i, 1)] =
+                camera.data[(i, 1)].clone() * self.params.sy.clone() + self.params.cy.clone();
         }
         result
     }

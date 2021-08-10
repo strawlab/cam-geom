@@ -67,8 +67,8 @@ impl<R: RealField> From<PerspectiveParams<R>> for IntrinsicParametersPerspective
         use nalgebra::convert as c;
         #[rustfmt::skip]
         let cache_p = nalgebra::SMatrix::<R,3,4>::new(
-            params.fx, params.skew, params.cx, c(0.0),
-             c(0.0),     params.fy, params.cy, c(0.0),
+            params.fx.clone(), params.skew.clone(), params.cx.clone(), c(0.0),
+             c(0.0),     params.fy.clone(), params.cy.clone(), c(0.0),
              c(0.0),        c(0.0), c(1.0), c(0.0),
         );
         Self { params, cache_p }
@@ -93,12 +93,12 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
     /// Returns an error if the intrinsic parameter matrix is not normalized or
     /// otherwise does not represent a perspective camera model.
     pub fn from_normalized_3x4_matrix(p: SMatrix<R, 3, 4>) -> std::result::Result<Self, Error> {
-        let params = PerspectiveParams {
-            fx: p[(0, 0)],
-            fy: p[(1, 1)],
-            skew: p[(0, 1)],
-            cx: p[(0, 2)],
-            cy: p[(1, 2)],
+        let params: PerspectiveParams<R> = PerspectiveParams {
+            fx: p[(0, 0)].clone(),
+            fy: p[(1, 1)].clone(),
+            skew: p[(0, 1)].clone(),
+            cx: p[(0, 2)].clone(),
+            cy: p[(1, 2)].clone(),
         };
         if approx::relative_ne!(p[(0, 3)], nalgebra::convert(0.0)) {
             return Err(Error::InvalidInput);
@@ -134,31 +134,31 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
     /// Get X focal length
     #[inline]
     pub fn fx(&self) -> R {
-        self.params.fx
+        self.params.fx.clone()
     }
 
     /// Get Y focal length
     #[inline]
     pub fn fy(&self) -> R {
-        self.params.fy
+        self.params.fy.clone()
     }
 
     /// Get skew
     #[inline]
     pub fn skew(&self) -> R {
-        self.params.skew
+        self.params.skew.clone()
     }
 
     /// Get X center
     #[inline]
     pub fn cx(&self) -> R {
-        self.params.cx
+        self.params.cx.clone()
     }
 
     /// Get Y center
     #[inline]
     pub fn cy(&self) -> R {
-        self.params.cy
+        self.params.cy.clone()
     }
 
     /// Create a 3x3 projection matrix.
@@ -190,7 +190,7 @@ where
         NPTS: Dim,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        let one = convert(1.0);
+        let one: R = convert(1.0);
 
         // allocate zeros, fill later
         let mut result = RayBundle::new_shared_zero_origin(OMatrix::zeros_generic(
@@ -205,14 +205,15 @@ where
         // https://discourse.nphysics.org/t/array-broadcasting-support/375/3 .
 
         for i in 0..pixels.data.nrows() {
-            let u = pixels.data[(i, 0)];
-            let v = pixels.data[(i, 1)];
+            let u = pixels.data[(i, 0)].clone();
+            let v = pixels.data[(i, 1)].clone();
 
             // point in camcoords at distance 1.0 from image plane
-            let y = (v - self.params.cy) / self.params.fy;
-            cam_dir[(i, 0)] = (u - self.params.skew * y - self.params.cx) / self.params.fx; // x
+            let y = (v - self.params.cy.clone()) / self.params.fy.clone();
+            cam_dir[(i, 0)] = (u - self.params.skew.clone() * y.clone() - self.params.cx.clone())
+                / self.params.fx.clone(); // x
             cam_dir[(i, 1)] = y;
-            cam_dir[(i, 2)] = one; // z
+            cam_dir[(i, 2)] = one.clone(); // z
         }
         result
     }
@@ -237,14 +238,14 @@ where
 
         for i in 0..camera.data.nrows() {
             let x = nalgebra::Point3::new(
-                camera.data[(i, 0)],
-                camera.data[(i, 1)],
-                camera.data[(i, 2)],
+                camera.data[(i, 0)].clone(),
+                camera.data[(i, 1)].clone(),
+                camera.data[(i, 2)].clone(),
             )
             .to_homogeneous();
-            let rst = self.cache_p * x;
-            result.data[(i, 0)] = rst[0] / rst[2];
-            result.data[(i, 1)] = rst[1] / rst[2];
+            let rst = self.cache_p.clone() * x;
+            result.data[(i, 0)] = rst[0].clone() / rst[2].clone();
+            result.data[(i, 1)] = rst[1].clone() / rst[2].clone();
         }
         result
     }

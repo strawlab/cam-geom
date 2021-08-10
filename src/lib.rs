@@ -721,12 +721,22 @@ mod tests {
     {
         let dir = &line_b - &line_a;
         let testx = &test_pt - &line_a;
-        let mag_dir = (dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]).sqrt();
-        let mag_testx = (testx[0] * testx[0] + testx[1] * testx[1] + testx[2] * testx[2]).sqrt();
+        let mag_dir = (dir[0].clone() * dir[0].clone()
+            + dir[1].clone() * dir[1].clone()
+            + dir[2].clone() * dir[2].clone())
+        .sqrt();
+        let mag_testx = (testx[0].clone() * testx[0].clone()
+            + testx[1].clone() * testx[1].clone()
+            + testx[2].clone() * testx[2].clone())
+        .sqrt();
         let scale = mag_dir / mag_testx;
 
         for j in 0..3 {
-            approx::assert_abs_diff_eq!(testx[j] * scale, dir[j], epsilon = convert(1e-10));
+            approx::assert_abs_diff_eq!(
+                testx[j].clone() * scale.clone(),
+                dir[j].clone(),
+                epsilon = convert(1e-10)
+            );
         }
     }
 

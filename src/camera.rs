@@ -160,18 +160,18 @@ impl<R: RealField> Camera<R, IntrinsicParametersPerspective<R>> {
         let m = pmat.clone().remove_column(3);
         let (rquat, k) = rq_decomposition(m)?;
 
-        let k22: R = k[(2, 2)];
+        let k22: R = k[(2, 2)].clone();
 
         let one: R = convert(1.0);
 
         let k = k * (one / k22); // normalize
 
         let params = PerspectiveParams {
-            fx: k[(0, 0)],
-            fy: k[(1, 1)],
-            skew: k[(0, 1)],
-            cx: k[(0, 2)],
-            cy: k[(1, 2)],
+            fx: k[(0, 0)].clone(),
+            fy: k[(1, 1)].clone(),
+            skew: k[(0, 1)].clone(),
+            cx: k[(0, 2)].clone(),
+            cy: k[(1, 2)].clone(),
         };
 
         let camcenter = pmat2cam_center(pmat);
@@ -184,17 +184,17 @@ impl<R: RealField> Camera<R, IntrinsicParametersPerspective<R>> {
     pub fn as_camera_matrix(&self) -> SMatrix<R, 3, 4> {
         let m = {
             let p33 = self.intrinsics().as_intrinsics_matrix();
-            p33 * self.extrinsics().cache.qt
+            p33 * self.extrinsics().cache.qt.clone()
         };
 
         // flip sign if focal length < 0
         let m = if m[(0, 0)] < nalgebra::convert(0.0) {
-            -m
+            -m.clone()
         } else {
-            m
+            m.clone()
         };
 
-        m / m[(2, 3)] // normalize
+        m.clone() / m[(2, 3)].clone() // normalize
     }
 }
 
@@ -227,19 +227,20 @@ fn rq<R: RealField>(A: Matrix3<R>) -> (Matrix3<R>, Matrix3<R>) {
     let one: R = convert(1.0);
 
     // see https://math.stackexchange.com/a/1640762
+    #[rustfmt::skip]
     let P = Matrix3::<R>::new(
-        zero, zero, one, // row 1
-        zero, one, zero, // row 2
-        one, zero, zero, // row 3
+        zero.clone(), zero.clone(), one.clone(), // row 1
+        zero.clone(), one.clone(), zero.clone(), // row 2
+        one.clone(), zero.clone(), zero.clone(), // row 3
     );
-    let Atilde = P * A;
+    let Atilde = P.clone() * A;
 
     let (Qtilde, Rtilde) = {
         let qrm = nalgebra::linalg::QR::new(Atilde.transpose());
         (qrm.q(), qrm.r())
     };
-    let Q = P * Qtilde.transpose();
-    let R = P * Rtilde.transpose() * P;
+    let Q = P.clone() * Qtilde.transpose();
+    let R = P.clone() * Rtilde.transpose() * P.clone();
     (R, Q)
 }
 
@@ -252,8 +253,8 @@ fn rq_decomposition<R: RealField>(
     for i in 0..3 {
         if intrin[(i, i)] < zero {
             for j in 0..3 {
-                intrin[(j, i)] = -intrin[(j, i)];
-                q[(i, j)] = -q[(i, j)];
+                intrin[(j, i)] = -intrin[(j, i)].clone();
+                q[(i, j)] = -q[(i, j)].clone();
             }
         }
     }
@@ -279,7 +280,7 @@ fn rq_decomposition<R: RealField>(
 fn right_handed_rotation_quat_new<R: RealField>(
     orig: &Matrix3<R>,
 ) -> Result<UnitQuaternion<R>, Error> {
-    let r1 = *orig;
+    let r1 = orig.clone();
     let rotmat = Rotation3::from_matrix_unchecked(r1);
     let rquat = UnitQuaternion::from_rotation_matrix(&rotmat);
     if !is_right_handed_rotation_quat(&rquat) {
@@ -293,7 +294,7 @@ fn right_handed_rotation_quat_new<R: RealField>(
 /// Converts quaternion to rotation matrix and back again to quat then comparing
 /// quats. Probably there is a much faster and better way.
 pub(crate) fn is_right_handed_rotation_quat<R: RealField>(rquat: &UnitQuaternion<R>) -> bool {
-    let rotmat2 = rquat.to_rotation_matrix();
+    let rotmat2 = rquat.clone().to_rotation_matrix();
     let rquat2 = UnitQuaternion::from_rotation_matrix(&rotmat2);
     let delta = rquat.rotation_to(&rquat2);
     let angle = my_quat_angle(&delta);
@@ -304,14 +305,18 @@ pub(crate) fn is_right_handed_rotation_quat<R: RealField>(rquat: &UnitQuaternion
 /// get the camera center from a 3x4 camera projection matrix
 fn pmat2cam_center<R, S>(p: &Matrix<R, U3, U4, S>) -> Point3<R>
 where
-    R: RealField + Clone,
+    R: RealField,
     S: Storage<R, U3, U4> + Clone,
 {
     let x = p.clone().remove_column(0).determinant();
     let y = -p.clone().remove_column(1).determinant();
     let z = p.clone().remove_column(2).determinant();
     let w = -p.clone().remove_column(3).determinant();
-    Point3::from(Vector3::new(x / w, y / w, z / w))
+    Point3::from(Vector3::new(
+        x.clone() / w.clone(),
+        y.clone() / w.clone(),
+        z.clone() / w.clone(),
+    ))
 }
 
 // Calculate angle of quaternion
