@@ -517,9 +517,9 @@ where
     /// This can be inefficient, because when not every ray has a different
     /// direction (which is the case for the `SharedDirectionRayBundle` type),
     /// this will nevertheless copy the single direction `NPTS` times.
-    fn directions<'a, NPTS, StorageIn>(
+    fn directions<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: DimName,
@@ -531,9 +531,9 @@ where
     /// This can be inefficient, because when not every ray has a different
     /// center (which is the case for the `SharedOriginRayBundle` type),
     /// this will nevertheless copy the single center `NPTS` times.
-    fn centers<'a, NPTS, StorageIn>(
+    fn centers<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: DimName,
@@ -721,12 +721,22 @@ mod tests {
     {
         let dir = &line_b - &line_a;
         let testx = &test_pt - &line_a;
-        let mag_dir = (dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]).sqrt();
-        let mag_testx = (testx[0] * testx[0] + testx[1] * testx[1] + testx[2] * testx[2]).sqrt();
+        let mag_dir = (dir[0].clone() * dir[0].clone()
+            + dir[1].clone() * dir[1].clone()
+            + dir[2].clone() * dir[2].clone())
+        .sqrt();
+        let mag_testx = (testx[0].clone() * testx[0].clone()
+            + testx[1].clone() * testx[1].clone()
+            + testx[2].clone() * testx[2].clone())
+        .sqrt();
         let scale = mag_dir / mag_testx;
 
         for j in 0..3 {
-            approx::assert_abs_diff_eq!(testx[j] * scale, dir[j], epsilon = convert(1e-10));
+            approx::assert_abs_diff_eq!(
+                testx[j].clone() * scale.clone(),
+                dir[j].clone(),
+                epsilon = convert(1e-10)
+            );
         }
     }
 

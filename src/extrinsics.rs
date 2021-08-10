@@ -56,24 +56,28 @@ impl<R: RealField> std::fmt::Debug for ExtrinsicsCache<R> {
 impl<R: RealField> ExtrinsicParameters<R> {
     /// Create a new instance from a rotation and a camera center.
     pub fn from_rotation_and_camcenter(rotation: UnitQuaternion<R>, camcenter: Point3<R>) -> Self {
-        let q = rotation.to_rotation_matrix();
-        let translation = -(q * camcenter);
+        let q = rotation.clone().to_rotation_matrix();
+        let translation = -(q.clone() * camcenter.clone());
         #[rustfmt::skip]
         let qt = {
             let q = q.matrix();
             SMatrix::<R,3,4>::new(
-                q[(0,0)], q[(0,1)], q[(0,2)], translation[0],
-                q[(1,0)], q[(1,1)], q[(1,2)], translation[1],
-                q[(2,0)], q[(2,1)], q[(2,2)], translation[2],
+                q[(0,0)].clone(), q[(0,1)].clone(), q[(0,2)].clone(), translation[0].clone(),
+                q[(1,0)].clone(), q[(1,1)].clone(), q[(1,2)].clone(), translation[1].clone(),
+                q[(2,0)].clone(), q[(2,1)].clone(), q[(2,2)].clone(), translation[2].clone(),
             )
         };
         let q_inv = q.inverse();
-        let camcenter_z0 = Point3::from(Vector3::new(camcenter[0], camcenter[1], convert(0.0)));
+        let camcenter_z0 = Point3::from(Vector3::new(
+            camcenter[0].clone(),
+            camcenter[1].clone(),
+            convert::<_, R>(0.0),
+        ));
         let pose = Isometry3::from_parts(
             Translation {
-                vector: translation.coords,
+                vector: translation.clone().coords,
             },
-            rotation,
+            rotation.clone(),
         );
         let pose_inv = pose.inverse();
         let cache = ExtrinsicsCache {
@@ -108,8 +112,8 @@ impl<R: RealField> ExtrinsicParameters<R> {
 
     /// Create a new instance from an [`nalgebra::Isometry3`](https://docs.rs/nalgebra/latest/nalgebra/geometry/type.Isometry3.html).
     pub fn from_pose(pose: &Isometry3<R>) -> Self {
-        let rquat = pose.rotation;
-        let translation = pose.translation.vector;
+        let rquat = pose.clone().rotation;
+        let translation = pose.clone().translation.vector;
         let q = rquat.inverse().to_rotation_matrix();
         let camcenter = -(q * translation);
         let cc = Point3 { coords: camcenter };
@@ -126,7 +130,12 @@ impl<R: RealField> ExtrinsicParameters<R> {
         let q2 = UnitQuaternion::from_axis_angle(&dir_unit, pi);
         let q3 = q * q2;
 
-        Self::from_rotation_and_camcenter(q3, Point3 { coords: *camcenter })
+        Self::from_rotation_and_camcenter(
+            q3,
+            Point3 {
+                coords: camcenter.clone(),
+            },
+        )
     }
 
     /// Return the camera center
@@ -207,12 +216,12 @@ impl<R: RealField> ExtrinsicParameters<R> {
 
         for i in 0..in_mult.nrows() {
             let tmp = self.cache.pose_inv.transform_point(&Point3::new(
-                in_mult[(i, 0)],
-                in_mult[(i, 1)],
-                in_mult[(i, 2)],
+                in_mult[(i, 0)].clone(),
+                in_mult[(i, 1)].clone(),
+                in_mult[(i, 2)].clone(),
             ));
             for j in 0..3 {
-                out_mult[(i, j)] = tmp[j];
+                out_mult[(i, j)] = tmp[j].clone();
             }
         }
         world
@@ -230,7 +239,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
         StorageCamera: Storage<R, NPTS, U3>,
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
-        camera.to_pose(self.cache.pose_inv)
+        camera.to_pose(self.cache.pose_inv.clone())
     }
 
     /// Convert points in world coordinates to camera coordinates.
@@ -254,12 +263,12 @@ impl<R: RealField> ExtrinsicParameters<R> {
 
         for i in 0..in_mult.nrows() {
             let tmp = self.cache.pose.transform_point(&Point3::new(
-                in_mult[(i, 0)],
-                in_mult[(i, 1)],
-                in_mult[(i, 2)],
+                in_mult[(i, 0)].clone(),
+                in_mult[(i, 1)].clone(),
+                in_mult[(i, 2)].clone(),
             ));
             for j in 0..3 {
-                out_mult[(i, j)] = tmp[j];
+                out_mult[(i, j)] = tmp[j].clone();
             }
         }
         cam_coords
@@ -390,22 +399,23 @@ mod tests {
     }
 
     fn roundtrip_generic<R: RealField>(epsilon: R) {
-        let zero = convert(0.0);
-        let one = convert(1.0);
+        let zero: R = convert(0.0);
+        let one: R = convert(1.0);
 
         let e1 = ExtrinsicParameters::<R>::from_view(
             &Vector3::new(c(1.2), c(3.4), c(5.6)), // camcenter
             &Vector3::new(c(2.2), c(3.4), c(5.6)), // lookat
-            &nalgebra::Unit::new_normalize(Vector3::new(zero, zero, one)), // up
+            &nalgebra::Unit::new_normalize(Vector3::new(zero.clone(), zero.clone(), one.clone())), // up
         );
 
+        #[rustfmt::skip]
         let cam_coords = Points {
             coords: std::marker::PhantomData,
             data: SMatrix::<R, 4, 3>::new(
-                zero, zero, zero, // at camera center
-                zero, zero, one, // one unit in +Z - exactly in camera direction
-                one, zero, zero, // one unit in +X - right of camera axis
-                zero, one, zero, // one unit in +Y - down from camera axis
+                zero.clone(), zero.clone(), zero.clone(), // at camera center
+                zero.clone(), zero.clone(), one.clone(), // one unit in +Z - exactly in camera direction
+                one.clone(), zero.clone(), zero.clone(), // one unit in +X - right of camera axis
+                zero.clone(), one.clone(), zero.clone(), // one unit in +Y - down from camera axis
             ),
         };
 
@@ -418,11 +428,15 @@ mod tests {
         );
 
         let world_actual = e1.camera_to_world(&cam_coords);
-        approx::assert_abs_diff_eq!(world_expected, world_actual.data, epsilon = epsilon);
+        approx::assert_abs_diff_eq!(world_expected, world_actual.data, epsilon = epsilon.clone());
 
         // test roundtrip
         let camera_actual = e1.world_to_camera(&world_actual);
-        approx::assert_abs_diff_eq!(cam_coords.data, camera_actual.data, epsilon = epsilon);
+        approx::assert_abs_diff_eq!(
+            cam_coords.data,
+            camera_actual.data,
+            epsilon = epsilon.clone()
+        );
     }
 
     #[test]

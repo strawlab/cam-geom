@@ -14,7 +14,9 @@ use crate::{CoordinateSystem, Error, Points, Ray};
 /// Iter::Sum is not implemented for R.
 macro_rules! sum_as_f64 {
     ($iter:expr,$R:ty) => {{
-        $iter.map(|x| na::try_convert::<$R, f64>(*x).unwrap()).sum()
+        $iter
+            .map(|x| na::try_convert::<$R, f64>(x.clone()).unwrap())
+            .sum()
     }};
 }
 // just like above but without * dereference.
@@ -65,18 +67,18 @@ where
 
         // Normalize the vector length.
         let dir = nalgebra::base::Unit::new_normalize(Vector3::new(
-            d.data.0[0][0],
-            d.data.0[1][0],
-            d.data.0[2][0],
+            d.data.0[0][0].clone(),
+            d.data.0[1][0].clone(),
+            d.data.0[2][0].clone(),
         ));
 
-        line_dirs[(i, 0)] = dir[0];
-        line_dirs[(i, 1)] = dir[1];
-        line_dirs[(i, 2)] = dir[2];
+        line_dirs[(i, 0)] = dir[0].clone();
+        line_dirs[(i, 1)] = dir[1].clone();
+        line_dirs[(i, 2)] = dir[2].clone();
 
-        line_points[(i, 0)] = ray_wc.center.data.0[0][0];
-        line_points[(i, 1)] = ray_wc.center.data.0[1][0];
-        line_points[(i, 2)] = ray_wc.center.data.0[2][0];
+        line_points[(i, 0)] = ray_wc.center.data.0[0][0].clone();
+        line_points[(i, 1)] = ray_wc.center.data.0[1][0].clone();
+        line_points[(i, 2)] = ray_wc.center.data.0[2][0].clone();
     }
 
     let mut xxm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
@@ -95,27 +97,27 @@ where
     let minusone: R = na::convert(-1.0);
 
     for (x, xxm1) in nx.into_iter().zip(xxm1.iter_mut()) {
-        *xxm1 = x.powi(2).add(minusone);
+        *xxm1 = x.clone().powi(2).add(minusone.clone());
     }
 
     for (y, yym1) in ny.into_iter().zip(yym1.iter_mut()) {
-        *yym1 = y.powi(2).add(minusone);
+        *yym1 = y.clone().powi(2).add(minusone.clone());
     }
 
     for (z, zzm1) in nz.into_iter().zip(zzm1.iter_mut()) {
-        *zzm1 = z.powi(2).add(minusone);
+        *zzm1 = z.clone().powi(2).add(minusone.clone());
     }
 
     for (x, y, xy) in izip!(nx.into_iter(), ny.into_iter(), xy.iter_mut()) {
-        *xy = *x * *y;
+        *xy = x.clone() * y.clone();
     }
 
     for (x, z, xz) in izip!(nx.into_iter(), nz.into_iter(), xz.iter_mut()) {
-        *xz = *x * *z;
+        *xz = x.clone() * z.clone();
     }
 
     for (y, z, yz) in izip!(ny.into_iter(), nz.into_iter(), yz.iter_mut()) {
-        *yz = *y * *z;
+        *yz = y.clone() * z.clone();
     }
 
     let SXX: f64 = sum_as_f64!(xxm1.iter(), R);
@@ -131,21 +133,30 @@ where
     let py = line_points.column(1);
     let pz = line_points.column(2);
 
-    let xt1 = px.iter().zip(xxm1.iter()).map(|(a, b)| *a * *b);
-    let xt2 = py.iter().zip(xy.iter()).map(|(a, b)| *a * *b);
-    let xt3 = pz.iter().zip(xz.iter()).map(|(a, b)| *a * *b);
+    let xt1 = px
+        .iter()
+        .zip(xxm1.iter())
+        .map(|(a, b)| a.clone() * b.clone());
+    let xt2 = py.iter().zip(xy.iter()).map(|(a, b)| a.clone() * b.clone());
+    let xt3 = pz.iter().zip(xz.iter()).map(|(a, b)| a.clone() * b.clone());
     let CX: f64 = refsum_as_f64!(izip!(xt1, xt2, xt3).map(|(t1, t2, t3)| t1 + t2 + t3), R);
     let CX: R = na::convert(CX);
 
-    let yt1 = px.iter().zip(xy.iter()).map(|(a, b)| *a * *b);
-    let yt2 = py.iter().zip(yym1.iter()).map(|(a, b)| *a * *b);
-    let yt3 = pz.iter().zip(yz.iter()).map(|(a, b)| *a * *b);
+    let yt1 = px.iter().zip(xy.iter()).map(|(a, b)| a.clone() * b.clone());
+    let yt2 = py
+        .iter()
+        .zip(yym1.iter())
+        .map(|(a, b)| a.clone() * b.clone());
+    let yt3 = pz.iter().zip(yz.iter()).map(|(a, b)| a.clone() * b.clone());
     let CY: f64 = refsum_as_f64!(izip!(yt1, yt2, yt3).map(|(t1, t2, t3)| t1 + t2 + t3), R);
     let CY: R = na::convert(CY);
 
-    let zt1 = px.iter().zip(xz.iter()).map(|(a, b)| *a * *b);
-    let zt2 = py.iter().zip(yz.iter()).map(|(a, b)| *a * *b);
-    let zt3 = pz.iter().zip(zzm1.iter()).map(|(a, b)| *a * *b);
+    let zt1 = px.iter().zip(xz.iter()).map(|(a, b)| a.clone() * b.clone());
+    let zt2 = py.iter().zip(yz.iter()).map(|(a, b)| a.clone() * b.clone());
+    let zt3 = pz
+        .iter()
+        .zip(zzm1.iter())
+        .map(|(a, b)| a.clone() * b.clone());
     let CZ: f64 = refsum_as_f64!(izip!(zt1, zt2, zt3).map(|(t1, t2, t3)| t1 + t2 + t3), R);
     let CZ: R = na::convert(CZ);
 
@@ -157,14 +168,14 @@ where
 
     let mut result = crate::Points::new(nalgebra::OMatrix::<R, U1, U3>::zeros_generic(u1, u3));
     for j in 0..3 {
-        result.data[(0, j)] = r[j];
+        result.data[(0, j)] = r[j].clone();
     }
     Ok(result)
 }
 
 fn my_pinv<R: RealField>(m: &SMatrix<R, 3, 3>) -> Result<SMatrix<R, 3, 3>, Error> {
     Ok(
-        na::linalg::SVD::try_new(*m, true, true, na::convert(1e-7), 100)
+        na::linalg::SVD::try_new(m.clone(), true, true, na::convert(1e-7), 100)
             .ok_or(Error::SvdFailed)?
             .pseudo_inverse(na::convert(1.0e-7))
             .unwrap(),
