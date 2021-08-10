@@ -163,9 +163,9 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
 
     /// Create a 3x3 projection matrix.
     #[inline]
-    pub(crate) fn as_intrinsics_matrix<'a>(
-        &'a self,
-    ) -> Matrix<R, U3, U3, SliceStorage<'a, R, U3, U3, U1, U3>> {
+    pub(crate) fn as_intrinsics_matrix(
+        &self,
+    ) -> Matrix<R, U3, U3, SliceStorage<'_, R, U3, U3, U1, U3>> {
         // TODO: implement similar functionality for orthographic camera and
         // make a new trait which exposes this functionality. Note that not all
         // intrinsic parameter implementations will be able to implement this

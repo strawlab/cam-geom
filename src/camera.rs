@@ -189,9 +189,9 @@ impl<R: RealField> Camera<R, IntrinsicParametersPerspective<R>> {
 
         // flip sign if focal length < 0
         let m = if m[(0, 0)] < nalgebra::convert(0.0) {
-            -m.clone()
+            -m
         } else {
-            m.clone()
+            m
         };
 
         m.clone() / m[(2, 3)].clone() // normalize
@@ -231,7 +231,7 @@ fn rq<R: RealField>(A: Matrix3<R>) -> (Matrix3<R>, Matrix3<R>) {
     let P = Matrix3::<R>::new(
         zero.clone(), zero.clone(), one.clone(), // row 1
         zero.clone(), one.clone(), zero.clone(), // row 2
-        one.clone(), zero.clone(), zero.clone(), // row 3
+        one, zero.clone(), zero, // row 3
     );
     let Atilde = P.clone() * A;
 
@@ -240,7 +240,7 @@ fn rq<R: RealField>(A: Matrix3<R>) -> (Matrix3<R>, Matrix3<R>) {
         (qrm.q(), qrm.r())
     };
     let Q = P.clone() * Qtilde.transpose();
-    let R = P.clone() * Rtilde.transpose() * P.clone();
+    let R = P.clone() * Rtilde.transpose() * P;
     (R, Q)
 }
 
@@ -303,6 +303,7 @@ pub(crate) fn is_right_handed_rotation_quat<R: RealField>(rquat: &UnitQuaternion
 }
 
 /// get the camera center from a 3x4 camera projection matrix
+#[allow(clippy::many_single_char_names)]
 fn pmat2cam_center<R, S>(p: &Matrix<R, U3, U4, S>) -> Point3<R>
 where
     R: RealField,
@@ -312,11 +313,7 @@ where
     let y = -p.clone().remove_column(1).determinant();
     let z = p.clone().remove_column(2).determinant();
     let w = -p.clone().remove_column(3).determinant();
-    Point3::from(Vector3::new(
-        x.clone() / w.clone(),
-        y.clone() / w.clone(),
-        z.clone() / w.clone(),
-    ))
+    Point3::from(Vector3::new(x / w.clone(), y / w.clone(), z / w))
 }
 
 // Calculate angle of quaternion

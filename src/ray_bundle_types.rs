@@ -22,7 +22,7 @@ where
         // center is at (0,0,0)
         let zero: R = nalgebra::convert(0.0);
         Self {
-            center: Point3::new(zero.clone(), zero.clone(), zero.clone()),
+            center: Point3::new(zero.clone(), zero.clone(), zero),
         }
     }
 }
@@ -43,9 +43,9 @@ where
         }
     }
 
-    fn directions<'a, NPTS, StorageIn>(
+    fn directions<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: nalgebra::DimName,
@@ -62,9 +62,9 @@ where
         result
     }
 
-    fn centers<'a, NPTS, StorageIn>(
+    fn centers<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: nalgebra::DimName,
@@ -207,9 +207,9 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         }
     }
 
-    fn directions<'a, NPTS, StorageIn>(
+    fn directions<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: nalgebra::DimName,
@@ -226,9 +226,9 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         result
     }
 
-    fn centers<'a, NPTS, StorageIn>(
+    fn centers<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: nalgebra::DimName,
@@ -297,7 +297,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         let mag2 = dx.clone() * dx.clone() + dy.clone() * dy.clone() + dz.clone() * dz.clone();
         let mag = mag2.sqrt();
         let scale = distance / mag;
-        let dist_dir = Vector3::new(scale.clone() * dx, scale.clone() * dy, scale.clone() * dz);
+        let dist_dir = Vector3::new(scale.clone() * dx, scale.clone() * dy, scale * dz);
 
         for i in 0..centers.nrows() {
             for j in 0..3 {

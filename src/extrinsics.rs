@@ -67,11 +67,11 @@ impl<R: RealField> ExtrinsicParameters<R> {
                 q[(2,0)].clone(), q[(2,1)].clone(), q[(2,2)].clone(), translation[2].clone(),
             )
         };
-        let q_inv = q.clone().inverse();
+        let q_inv = q.inverse();
         let camcenter_z0 = Point3::from(Vector3::new(
             camcenter[0].clone(),
             camcenter[1].clone(),
-            convert::<_, R>(0.0).clone(),
+            convert::<_, R>(0.0),
         ));
         let pose = Isometry3::from_parts(
             Translation {

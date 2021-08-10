@@ -61,19 +61,18 @@ impl<R: RealField> JacobianPerspectiveCache<R> {
             + p[(0, 0)].clone() / denom.clone();
         let uy = -p[(2, 1)].clone() * denom_sqrt.clone() * factor_u.clone()
             + p[(0, 1)].clone() / denom.clone();
-        let uz = -p[(2, 2)].clone() * denom_sqrt.clone() * factor_u.clone()
-            + p[(0, 2)].clone() / denom.clone();
+        let uz =
+            -p[(2, 2)].clone() * denom_sqrt.clone() * factor_u + p[(0, 2)].clone() / denom.clone();
 
-        let factor_v = p[(1, 0)].clone() * x.clone()
-            + p[(1, 1)].clone() * y.clone()
-            + p[(1, 2)].clone() * z.clone()
+        let factor_v = p[(1, 0)].clone() * x
+            + p[(1, 1)].clone() * y
+            + p[(1, 2)].clone() * z
             + p[(1, 3)].clone();
         let vx = -p[(2, 0)].clone() * denom_sqrt.clone() * factor_v.clone()
             + p[(1, 0)].clone() / denom.clone();
         let vy = -p[(2, 1)].clone() * denom_sqrt.clone() * factor_v.clone()
             + p[(1, 1)].clone() / denom.clone();
-        let vz = -p[(2, 2)].clone() * denom_sqrt.clone() * factor_v.clone()
-            + p[(1, 2)].clone() / denom.clone();
+        let vz = -p[(2, 2)].clone() * denom_sqrt * factor_v + p[(1, 2)].clone() / denom;
 
         SMatrix::<R, 2, 3>::new(ux, uy, uz, vx, vy, vz)
     }

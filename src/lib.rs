@@ -517,9 +517,9 @@ where
     /// This can be inefficient, because when not every ray has a different
     /// direction (which is the case for the `SharedDirectionRayBundle` type),
     /// this will nevertheless copy the single direction `NPTS` times.
-    fn directions<'a, NPTS, StorageIn>(
+    fn directions<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: DimName,
@@ -531,9 +531,9 @@ where
     /// This can be inefficient, because when not every ray has a different
     /// center (which is the case for the `SharedOriginRayBundle` type),
     /// this will nevertheless copy the single center `NPTS` times.
-    fn centers<'a, NPTS, StorageIn>(
+    fn centers<NPTS, StorageIn>(
         &self,
-        self_data: &'a Matrix<R, NPTS, U3, StorageIn>,
+        self_data: &Matrix<R, NPTS, U3, StorageIn>,
     ) -> Matrix<R, NPTS, U3, Owned<R, NPTS, U3>>
     where
         NPTS: DimName,
