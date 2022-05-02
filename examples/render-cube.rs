@@ -156,7 +156,7 @@ where
     DefaultAllocator: Allocator<f64, NPTS, U2>,
 {
     // Project the original 3D coordinates to 2D pixel coordinates.
-    let pixel_coords = cam.world_to_pixel(&verts);
+    let pixel_coords = cam.world_to_pixel(verts);
 
     let mut wtr = SvgWriter::new();
 

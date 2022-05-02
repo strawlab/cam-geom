@@ -191,7 +191,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
     /// `pt_cam` is specified in camera coords.
     fn lookdir(&self, pt_cam: &Point3<R>) -> Unit<Vector3<R>> {
         let cc = self.camcenter();
-        let pt = self.cache.pose_inv.transform_point(&pt_cam) - cc;
+        let pt = self.cache.pose_inv.transform_point(pt_cam) - cc;
         nalgebra::Unit::new_normalize(pt)
     }
 

@@ -118,7 +118,7 @@ where
         DefaultAllocator: Allocator<R, NPTS, U3>,
         DefaultAllocator: Allocator<R, NPTS, U2>,
     {
-        let camera_frame = self.extrinsics.world_to_camera(&world);
+        let camera_frame = self.extrinsics.world_to_camera(world);
         self.intrinsics.camera_to_pixel(&camera_frame)
     }
 
@@ -144,7 +144,7 @@ where
         DefaultAllocator: Allocator<R, NPTS, U3>,
     {
         // get camera frame rays
-        let camera = self.intrinsics.pixel_to_camera(&pixels);
+        let camera = self.intrinsics.pixel_to_camera(pixels);
 
         // get world frame rays
         self.extrinsics.ray_camera_to_world(&camera)
