@@ -1,7 +1,7 @@
 //! Utilities for testing `cam_geom` implementations.
 use super::*;
 use nalgebra::{
-    base::{dimension::Dynamic, VecStorage},
+    base::{dimension::Dyn, VecStorage},
     convert,
 };
 
@@ -10,7 +10,7 @@ pub(crate) fn generate_uv_raw<R: RealField>(
     height: usize,
     step: usize,
     border: usize,
-) -> Pixels<R, Dynamic, VecStorage<R, Dynamic, U2>> {
+) -> Pixels<R, Dyn, VecStorage<R, Dyn, U2>> {
     let mut uv_raws: Vec<[R; 2]> = Vec::new();
     for row in num_iter::range_step(border, height - border, step) {
         for col in num_iter::range_step(border, width - border, step) {
@@ -18,7 +18,7 @@ pub(crate) fn generate_uv_raw<R: RealField>(
         }
     }
 
-    let mut data = nalgebra::OMatrix::<R, Dynamic, U2>::from_element(uv_raws.len(), convert(0.0));
+    let mut data = nalgebra::OMatrix::<R, Dyn, U2>::from_element(uv_raws.len(), convert(0.0));
     for i in 0..uv_raws.len() {
         for j in 0..2 {
             data[(i, j)] = uv_raws[i][j].clone();

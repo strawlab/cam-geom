@@ -3,7 +3,7 @@
 use nalgebra as na;
 
 use na::{
-    allocator::Allocator, base::storage::Owned, DefaultAllocator, Dim, Dynamic, Matrix3, OMatrix,
+    allocator::Allocator, base::storage::Owned, DefaultAllocator, Dim, Dyn, Matrix3, OMatrix,
     RealField, SMatrix, Vector3, U1, U3,
 };
 
@@ -46,20 +46,20 @@ pub fn best_intersection_of_rays<Coords, R>(
 where
     Coords: CoordinateSystem,
     R: RealField,
-    DefaultAllocator: Allocator<R, Dynamic, U3>,
-    DefaultAllocator: Allocator<R, U1, Dynamic>,
+    DefaultAllocator: Allocator<R, Dyn, U3>,
+    DefaultAllocator: Allocator<R, U1, Dyn>,
     DefaultAllocator: Allocator<R, U1, U3>,
 {
     if rays.len() < 2 {
         return Err(Error::MinimumTwoRaysNeeded);
     }
 
-    let npts = Dynamic::new(rays.len());
+    let npts = Dyn(rays.len());
     let u1 = U1::from_usize(1);
     let u3 = U3::from_usize(3);
 
-    let mut line_dirs = OMatrix::<R, Dynamic, U3>::zeros_generic(npts, u3);
-    let mut line_points = OMatrix::<R, Dynamic, U3>::zeros_generic(npts, u3);
+    let mut line_dirs = OMatrix::<R, Dyn, U3>::zeros_generic(npts, u3);
+    let mut line_points = OMatrix::<R, Dyn, U3>::zeros_generic(npts, u3);
 
     for i in 0..rays.len() {
         let ray_wc = rays.get(i).unwrap();
@@ -81,12 +81,12 @@ where
         line_points[(i, 2)] = ray_wc.center.data.0[2][0].clone();
     }
 
-    let mut xxm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut yym1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut zzm1 = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut xy = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut xz = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
-    let mut yz = OMatrix::<R, U1, Dynamic>::zeros_generic(u1, npts);
+    let mut xxm1 = OMatrix::<R, U1, Dyn>::zeros_generic(u1, npts);
+    let mut yym1 = OMatrix::<R, U1, Dyn>::zeros_generic(u1, npts);
+    let mut zzm1 = OMatrix::<R, U1, Dyn>::zeros_generic(u1, npts);
+    let mut xy = OMatrix::<R, U1, Dyn>::zeros_generic(u1, npts);
+    let mut xz = OMatrix::<R, U1, Dyn>::zeros_generic(u1, npts);
+    let mut yz = OMatrix::<R, U1, Dyn>::zeros_generic(u1, npts);
 
     // TODO element-wise add, mul with nalgebra matrices
 
