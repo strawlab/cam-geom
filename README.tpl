@@ -10,13 +10,6 @@
 
 {{readme}}
 
-## Altenatives
-
-You may also be interested in
-[rust-cv/cv-core](https://github.com/rust-cv/cv-core), which also contains
-camera models for photogrammetry. The two crates were developed independently
-without knowledge of each other.
-
 ## Regenerate `README.md`
 
 The `README.md` file can be regenerated with:
