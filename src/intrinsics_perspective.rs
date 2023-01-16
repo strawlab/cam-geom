@@ -2,7 +2,7 @@ use nalgebra::{
     allocator::Allocator,
     convert,
     storage::{Owned, Storage},
-    DefaultAllocator, Dim, Matrix, OMatrix, RealField, SMatrix, SliceStorage, U1, U2, U3,
+    DefaultAllocator, Dim, Matrix, OMatrix, RealField, SMatrix, U1, U2, U3,
 };
 
 #[cfg(feature = "serde-serialize")]
@@ -165,12 +165,12 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
     #[inline]
     pub(crate) fn as_intrinsics_matrix(
         &self,
-    ) -> Matrix<R, U3, U3, SliceStorage<'_, R, U3, U3, U1, U3>> {
+    ) -> Matrix<R, U3, U3, nalgebra::ViewStorage<'_, R, U3, U3, U1, U3>> {
         // TODO: implement similar functionality for orthographic camera and
         // make a new trait which exposes this functionality. Note that not all
         // intrinsic parameter implementations will be able to implement this
         // hypothetical new trait, because not all cameras are linear.
-        self.cache_p.fixed_slice::<3, 3>(0, 0)
+        self.cache_p.fixed_view::<3, 3>(0, 0)
     }
 }
 
