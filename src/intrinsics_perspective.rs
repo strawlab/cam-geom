@@ -396,31 +396,31 @@ mod tests {
         );
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p_valid).is_ok());
 
-        let mut p = p_valid.clone();
+        let mut p = p_valid;
         p[(2, 2)] = 1.1;
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p).is_err());
 
-        let mut p = p_valid.clone();
+        let mut p = p_valid;
         p[(0, 3)] = 1.1;
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p).is_err());
 
-        let mut p = p_valid.clone();
+        let mut p = p_valid;
         p[(1, 0)] = 1.1;
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p).is_err());
 
-        let mut p = p_valid.clone();
+        let mut p = p_valid;
         p[(1, 3)] = 1.1;
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p).is_err());
 
-        let mut p = p_valid.clone();
+        let mut p = p_valid;
         p[(2, 0)] = 1.1;
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p).is_err());
 
-        let mut p = p_valid.clone();
+        let mut p = p_valid;
         p[(2, 1)] = 1.1;
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p).is_err());
 
-        let mut p = p_valid.clone();
+        let mut p = p_valid;
         p[(2, 2)] = 1.1;
         assert!(IntrinsicParametersPerspective::from_normalized_3x4_matrix(p).is_err());
     }
@@ -458,13 +458,13 @@ mod tests {
 
             // Get camera matrix from this Camera instance and check it.
             let pmat = cam.as_camera_matrix();
-            assert_is_pmat_same(&cam, &pmat);
+            assert_is_pmat_same(cam, &pmat);
 
             // Create a new Camera instance from this matrix and check it.
             let cam2 = Camera::from_perspective_matrix(&pmat).unwrap();
             let pmat2 = cam2.as_camera_matrix();
             assert_is_pmat_same(&cam2, &pmat);
-            assert_is_pmat_same(&cam, &pmat2);
+            assert_is_pmat_same(cam, &pmat2);
         }
     }
 

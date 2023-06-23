@@ -415,7 +415,7 @@ mod tests {
                 zero.clone(), zero.clone(), zero.clone(), // at camera center
                 zero.clone(), zero.clone(), one.clone(), // one unit in +Z - exactly in camera direction
                 one.clone(), zero.clone(), zero.clone(), // one unit in +X - right of camera axis
-                zero.clone(), one.clone(), zero.clone(), // one unit in +Y - down from camera axis
+                zero.clone(), one, zero, // one unit in +Y - down from camera axis
             ),
         };
 
@@ -435,7 +435,7 @@ mod tests {
         approx::assert_abs_diff_eq!(
             cam_coords.data,
             camera_actual.data,
-            epsilon = epsilon.clone()
+            epsilon = epsilon
         );
     }
 
