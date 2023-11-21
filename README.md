@@ -1,7 +1,3 @@
-# Crate `cam_geom` for the [Rust language](https://www.rust-lang.org/)
-
-<!-- Note: README.md is generated automatically by `cargo readme` -->
-
 [![Crates.io](https://img.shields.io/crates/v/cam-geom.svg)](https://crates.io/crates/cam-geom)
 [![Documentation](https://docs.rs/cam-geom/badge.svg)](https://docs.rs/cam-geom/)
 [![Crate License](https://img.shields.io/crates/l/cam-geom.svg)](https://crates.io/crates/cam-geom)
@@ -65,13 +61,13 @@ Characteristics:
 
 To run the basic unit tests:
 
-```
+```text
 cargo test
 ```
 
 To run all unit tests:
 
-```
+```text
 cargo test --features serde-serialize
 ```
 
@@ -82,119 +78,9 @@ can build for it to check that our crate does not inadvertently pull in
 std. The unit tests require std, so cannot be run on a `no_std` platform.
 The following will fail if a std dependency is present:
 
-```
+```text
 # install target with: "rustup target add thumbv7em-none-eabihf"
 cargo build --no-default-features --target thumbv7em-none-eabihf
-```
-
-## Examples
-
-### Example - projecting 3D world coordinates to 2D pixel coordinates.
-
-```rust
-use cam_geom::*;
-use nalgebra::{Matrix2x3, Unit, Vector3};
-
-// Create two points in the world coordinate frame.
-let world_coords = Points::new(Matrix2x3::new(
-    1.0, 0.0, 0.0, // point 1
-    0.0, 1.0, 0.0, // point 2
-));
-
-// perepective parameters - focal length of 100, no skew, pixel center at (640,480)
-let intrinsics = IntrinsicParametersPerspective::from(PerspectiveParams {
-    fx: 100.0,
-    fy: 100.0,
-    skew: 0.0,
-    cx: 640.0,
-    cy: 480.0,
-});
-
-// Set extrinsic parameters - camera at (10,0,0), looing at (0,0,0), up (0,0,1)
-let camcenter = Vector3::new(10.0, 0.0, 0.0);
-let lookat = Vector3::new(0.0, 0.0, 0.0);
-let up = Unit::new_normalize(Vector3::new(0.0, 0.0, 1.0));
-let pose = ExtrinsicParameters::from_view(&camcenter, &lookat, &up);
-
-// Create a `Camera` with both intrinsic and extrinsic parameters.
-let camera = Camera::new(intrinsics, pose);
-
-// Project the original 3D coordinates to 2D pixel coordinates.
-let pixel_coords = camera.world_to_pixel(&world_coords);
-
-// Print the results.
-for i in 0..world_coords.data.nrows() {
-    let wc = world_coords.data.row(i);
-    let pix = pixel_coords.data.row(i);
-    println!("{} -> {}", wc, pix);
-}
-```
-
-This will print:
-
-```
-  ┌       ┐
-  │ 1 0 0 │
-  └       ┘
-
- ->
-  ┌         ┐
-  │ 640 480 │
-  └         ┘
-
-
-
-  ┌       ┐
-  │ 0 1 0 │
-  └       ┘
-
- ->
-  ┌         ┐
-  │ 650 480 │
-  └         ┘
-```
-
-
-### Example - intersection of rays
-
-```rust
-use cam_geom::*;
-use nalgebra::RowVector3;
-
-// Create the first ray.
-    let ray1 = Ray::<WorldFrame, _>::new(
-    RowVector3::new(1.0, 0.0, 0.0), // origin
-    RowVector3::new(0.0, 1.0, 0.0), // direction
-);
-
-// Create the second ray.
-let ray2 = Ray::<WorldFrame, _>::new(
-    RowVector3::new(0.0, 1.0, 0.0), // origin
-    RowVector3::new(1.0, 0.0, 0.0), // direction
-);
-
-// Compute the best intersection.
-let result = best_intersection_of_rays(&[ray1, ray2]).unwrap();
-
-// Print the result.
-println!("result: {}", result.data);
-```
-
-This will print:
-
-```
-result:
-  ┌       ┐
-  │ 1 1 0 │
-  └       ┘
-```
-
-## Regenerate `README.md`
-
-The `README.md` file can be regenerated with:
-
-```text
-cargo readme > README.md
 ```
 
 ## Code of conduct
