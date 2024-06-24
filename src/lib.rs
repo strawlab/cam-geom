@@ -136,7 +136,9 @@ pub use camera::Camera;
 /// Defines the different possible types of ray bundles.
 pub mod ray_bundle_types;
 
+#[cfg(feature = "alloc")]
 mod ray_intersection;
+#[cfg(feature = "alloc")]
 pub use ray_intersection::best_intersection_of_rays;
 
 pub mod linearize;
