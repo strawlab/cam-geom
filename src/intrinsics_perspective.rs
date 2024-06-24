@@ -161,6 +161,12 @@ impl<R: RealField> IntrinsicParametersPerspective<R> {
         self.params.cy.clone()
     }
 
+    /// Get intrinsic parameters
+    #[inline]
+    pub fn params(&self) -> &PerspectiveParams<R> {
+        &self.params
+    }
+
     /// Create a 3x3 projection matrix.
     #[inline]
     pub(crate) fn as_intrinsics_matrix(
