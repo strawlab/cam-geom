@@ -188,7 +188,7 @@ where
         Self::BundleType: Bundle<R>,
         IN: Storage<R, NPTS, U2>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let one: R = convert(1.0);
 
@@ -225,7 +225,7 @@ where
     where
         IN: Storage<R, NPTS, U3>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U2>,
+        DefaultAllocator: Allocator<NPTS, U2>,
     {
         let mut result = Pixels::new(OMatrix::zeros_generic(
             NPTS::from_usize(camera.data.nrows()),

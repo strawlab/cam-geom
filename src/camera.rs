@@ -115,8 +115,8 @@ where
     where
         NPTS: Dim,
         InStorage: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U2>,
+        DefaultAllocator: Allocator<NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U2>,
     {
         let camera_frame = self.extrinsics.world_to_camera(world);
         self.intrinsics.camera_to_pixel(&camera_frame)
@@ -139,9 +139,9 @@ where
         IN: Storage<R, NPTS, U2>,
         NPTS: Dim,
         I::BundleType: Bundle<R>,
-        DefaultAllocator: Allocator<R, U1, U2>,
-        DefaultAllocator: Allocator<R, NPTS, U2>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<U1, U2>,
+        DefaultAllocator: Allocator<NPTS, U2>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         // get camera frame rays
         let camera = self.intrinsics.pixel_to_camera(pixels);

@@ -203,7 +203,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
     where
         NPTS: Dim,
         InStorage: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let mut world = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(cam_coords.data.nrows()),
@@ -237,7 +237,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
         BType: Bundle<R>,
         NPTS: Dim,
         StorageCamera: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         camera.to_pose(self.cache.pose_inv.clone())
     }
@@ -250,7 +250,7 @@ impl<R: RealField> ExtrinsicParameters<R> {
     where
         NPTS: Dim,
         InStorage: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let mut cam_coords = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(world.data.nrows()),
@@ -432,11 +432,7 @@ mod tests {
 
         // test roundtrip
         let camera_actual = e1.world_to_camera(&world_actual);
-        approx::assert_abs_diff_eq!(
-            cam_coords.data,
-            camera_actual.data,
-            epsilon = epsilon
-        );
+        approx::assert_abs_diff_eq!(cam_coords.data, camera_actual.data, epsilon = epsilon);
     }
 
     #[test]
