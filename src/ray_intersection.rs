@@ -46,9 +46,9 @@ pub fn best_intersection_of_rays<Coords, R>(
 where
     Coords: CoordinateSystem,
     R: RealField,
-    DefaultAllocator: Allocator<R, Dyn, U3>,
-    DefaultAllocator: Allocator<R, U1, Dyn>,
-    DefaultAllocator: Allocator<R, U1, U3>,
+    DefaultAllocator: Allocator<Dyn, U3>,
+    DefaultAllocator: Allocator<U1, Dyn>,
+    DefaultAllocator: Allocator<U1, U3>,
 {
     if rays.len() < 2 {
         return Err(Error::MinimumTwoRaysNeeded);
@@ -96,27 +96,27 @@ where
 
     let minusone: R = na::convert(-1.0);
 
-    for (x, xxm1) in nx.into_iter().zip(xxm1.iter_mut()) {
+    for (x, xxm1) in nx.iter().zip(xxm1.iter_mut()) {
         *xxm1 = x.clone().powi(2).add(minusone.clone());
     }
 
-    for (y, yym1) in ny.into_iter().zip(yym1.iter_mut()) {
+    for (y, yym1) in ny.iter().zip(yym1.iter_mut()) {
         *yym1 = y.clone().powi(2).add(minusone.clone());
     }
 
-    for (z, zzm1) in nz.into_iter().zip(zzm1.iter_mut()) {
+    for (z, zzm1) in nz.iter().zip(zzm1.iter_mut()) {
         *zzm1 = z.clone().powi(2).add(minusone.clone());
     }
 
-    for (x, y, xy) in izip!(nx.into_iter(), ny.into_iter(), xy.iter_mut()) {
+    for (x, y, xy) in izip!(nx.iter(), ny.iter(), xy.iter_mut()) {
         *xy = x.clone() * y.clone();
     }
 
-    for (x, z, xz) in izip!(nx.into_iter(), nz.into_iter(), xz.iter_mut()) {
+    for (x, z, xz) in izip!(nx.iter(), nz.iter(), xz.iter_mut()) {
         *xz = x.clone() * z.clone();
     }
 
-    for (y, z, yz) in izip!(ny.into_iter(), nz.into_iter(), yz.iter_mut()) {
+    for (y, z, yz) in izip!(ny.iter(), nz.iter(), yz.iter_mut()) {
         *yz = y.clone() * z.clone();
     }
 

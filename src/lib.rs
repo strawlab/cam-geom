@@ -267,7 +267,7 @@ where
     R: RealField,
     NPTS: DimName,
     StorageMultiple: Storage<R, NPTS, U3>,
-    DefaultAllocator: Allocator<R, NPTS, U3>,
+    DefaultAllocator: Allocator<NPTS, U3>,
 {
     /// get directions of each ray in bundle
     #[inline]
@@ -368,7 +368,7 @@ where
     #[inline]
     pub fn point_on_ray(&self) -> Points<Coords, R, NPTS, Owned<R, NPTS, U3>>
     where
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         self.bundle_type.point_on_ray(&self.data)
     }
@@ -380,7 +380,7 @@ where
         distance: R,
     ) -> Points<Coords, R, NPTS, Owned<R, NPTS, U3>>
     where
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         self.bundle_type
             .point_on_ray_at_distance(&self.data, distance)
@@ -395,7 +395,7 @@ where
         R: RealField,
         NPTS: Dim,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         self.bundle_type.to_pose(pose, &self.data)
     }
@@ -447,7 +447,7 @@ where
     where
         NPTS: DimName,
         StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<NPTS, U3>;
 
     /// Get centers of each ray in bundle.
     ///
@@ -461,7 +461,7 @@ where
     where
         NPTS: DimName,
         StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<NPTS, U3>;
 
     /// Return points on on the input rays.
     ///
@@ -476,7 +476,7 @@ where
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<NPTS, U3>;
 
     /// Return points on on the input rays at a defined distance from the origin(s).
     fn point_on_ray_at_distance<NPTS, StorageIn, OutFrame>(
@@ -489,7 +489,7 @@ where
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<NPTS, U3>;
 
     /// Convert the input rays by the pose given.
     fn to_pose<NPTS, StorageIn, OutFrame>(
@@ -503,7 +503,7 @@ where
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<NPTS, U3>;
 }
 
 /// A geometric model of camera coordinates to pixels (and vice versa).
@@ -523,9 +523,9 @@ where
         Self::BundleType: Bundle<R>,
         IN: Storage<R, NPTS, U2>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, U1, U2>, // needed to make life easy for implementors
-        DefaultAllocator: Allocator<R, NPTS, U2>, // needed to make life easy for implementors
-        DefaultAllocator: Allocator<R, NPTS, U3>;
+        DefaultAllocator: Allocator<U1, U2>, // needed to make life easy for implementors
+        DefaultAllocator: Allocator<NPTS, U2>, // needed to make life easy for implementors
+        DefaultAllocator: Allocator<NPTS, U3>;
 
     /// project camera coords to pixel coordinates
     fn camera_to_pixel<IN, NPTS>(
@@ -535,7 +535,7 @@ where
     where
         IN: Storage<R, NPTS, U3>,
         NPTS: Dim,
-        DefaultAllocator: Allocator<R, NPTS, U2>;
+        DefaultAllocator: Allocator<NPTS, U2>;
 }
 
 #[cfg(test)]

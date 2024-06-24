@@ -152,8 +152,8 @@ where
     NPTS: Dim,
     I: IntrinsicParameters<f64>,
     S: Storage<f64, NPTS, U3>,
-    DefaultAllocator: Allocator<f64, NPTS, U3>,
-    DefaultAllocator: Allocator<f64, NPTS, U2>,
+    DefaultAllocator: Allocator<NPTS, U3>,
+    DefaultAllocator: Allocator<NPTS, U2>,
 {
     // Project the original 3D coordinates to 2D pixel coordinates.
     let pixel_coords = cam.world_to_pixel(verts);
