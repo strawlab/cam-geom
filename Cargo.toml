@@ -32,8 +32,8 @@ serde_json = "1.0"
 [features]
 default = ["std"]
 
-std = ["nalgebra/std", "num-iter", "alloc"]
-serde-serialize = ["serde", "nalgebra/serde-serialize"]
+std = ["nalgebra/std", "dep:num-iter", "alloc"]
+serde-serialize = ["dep:serde", "nalgebra/serde-serialize"]
 alloc = ["nalgebra/alloc"]
 
 [package.metadata.docs.rs]
