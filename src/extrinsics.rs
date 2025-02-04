@@ -294,7 +294,7 @@ impl<'de, R: RealField + serde::Deserialize<'de>> serde::Deserialize<'de>
         enum Field {
             RQuat,
             CamCenter,
-        };
+        }
 
         struct ExtrinsicParametersVisitor<'de, R2: RealField + serde::Deserialize<'de>>(
             std::marker::PhantomData<&'de R2>,
