@@ -38,4 +38,3 @@ alloc = ["nalgebra/alloc"]
 
 [package.metadata.docs.rs]
 features = ["serde-serialize"]
-rustdoc-args = ["--cfg", "docsrs"]
