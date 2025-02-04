@@ -50,7 +50,7 @@ where
     where
         NPTS: nalgebra::DimName,
         StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
@@ -69,7 +69,7 @@ where
     where
         NPTS: nalgebra::DimName,
         StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
@@ -90,7 +90,7 @@ where
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(directions.nrows()),
@@ -119,7 +119,7 @@ where
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(directions.nrows()),
@@ -154,7 +154,7 @@ where
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let bundle_type = Self::new_shared_zero_origin();
         let mut reposed = RayBundle::new(
@@ -214,7 +214,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
     where
         NPTS: nalgebra::DimName,
         StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
@@ -233,7 +233,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
     where
         NPTS: nalgebra::DimName,
         StorageIn: Storage<R, NPTS, U3>,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         // TODO: do this more smartly/efficiently
         let mut result = nalgebra::OMatrix::<R, NPTS, U3>::zeros();
@@ -254,7 +254,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(centers.nrows()),
@@ -283,7 +283,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let mut result = Points::new(OMatrix::zeros_generic(
             NPTS::from_usize(centers.nrows()),
@@ -316,7 +316,7 @@ impl<R: RealField> Bundle<R> for SharedDirectionRayBundle<R> {
         NPTS: Dim,
         StorageIn: Storage<R, NPTS, U3>,
         OutFrame: CoordinateSystem,
-        DefaultAllocator: Allocator< NPTS, U3>,
+        DefaultAllocator: Allocator<NPTS, U3>,
     {
         let bundle_type = Self::new_plusz_shared_direction();
 
