@@ -1,7 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![deny(rust_2018_idioms, unsafe_code, missing_docs)]
 #![cfg_attr(not(doctest), doc = include_str!("../README.md"))]
-#![cfg_attr(doc_cfg, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg, doc_auto_cfg))]
 
 //! # Examples
 //!
