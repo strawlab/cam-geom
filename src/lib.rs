@@ -226,6 +226,18 @@ pub struct Points<Coords: CoordinateSystem, R: RealField, NPTS: Dim, STORAGE> {
     pub data: nalgebra::Matrix<R, NPTS, U3, STORAGE>,
 }
 
+#[cfg(feature = "std")]
+impl<Coords: CoordinateSystem, R: RealField, NPTS: Dim, STORAGE: std::fmt::Debug> std::fmt::Debug
+    for Points<Coords, R, NPTS, STORAGE>
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("Points")
+            .field("coords", &self.coords)
+            .field("data", &self.data)
+            .finish()
+    }
+}
+
 impl<Coords, R, NPTS, STORAGE> Points<Coords, R, NPTS, STORAGE>
 where
     Coords: CoordinateSystem,
