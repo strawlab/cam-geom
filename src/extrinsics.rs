@@ -360,7 +360,7 @@ impl<'de, R: RealField + serde::Deserialize<'de>> serde::Deserialize<'de>
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["rquat", "camcenter"];
+        const FIELDS: &[&str] = &["rquat", "camcenter"];
         deserializer.deserialize_struct(
             "ExtrinsicParameters",
             FIELDS,

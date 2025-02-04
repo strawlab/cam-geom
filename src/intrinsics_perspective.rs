@@ -336,7 +336,7 @@ impl<'de, R: RealField + serde::Deserialize<'de>> serde::Deserialize<'de>
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["params"];
+        const FIELDS: &[&str] = &["params"];
         deserializer.deserialize_struct(
             "IntrinsicParametersPerspective",
             FIELDS,
