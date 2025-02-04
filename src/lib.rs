@@ -26,7 +26,7 @@
 //!     cy: 480.0,
 //! });
 //!
-//! // Set extrinsic parameters - camera at (10,0,0), looing at (0,0,0), up (0,0,1)
+//! // Set extrinsic parameters - camera at (10,0,0), looking at (0,0,0), up (0,0,1)
 //! let camcenter = Vector3::new(10.0, 0.0, 0.0);
 //! let lookat = Vector3::new(0.0, 0.0, 0.0);
 //! let up = Unit::new_normalize(Vector3::new(0.0, 0.0, 1.0));
