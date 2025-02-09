@@ -157,6 +157,9 @@ impl<R: RealField> ExtrinsicParameters<R> {
     }
 
     /// Return the rotation part of the pose
+    ///
+    /// To obtain the rotation as a quaternion, use [Self::pose] to obtain an
+    /// [Isometry3] and access the [field@Isometry3::rotation] field.
     #[inline]
     pub fn rotation(&self) -> &Rotation3<R> {
         &self.cache.q
@@ -387,6 +390,32 @@ fn _test_extrinsics_is_deserialize() {
 mod tests {
     use super::*;
     use nalgebra::convert as c;
+
+    #[test]
+    fn to_from_pose_f64() {
+        to_from_pose_generic::<f64>(1e-10)
+    }
+
+    #[test]
+    fn to_from_pose_f32() {
+        to_from_pose_generic::<f32>(1e-5)
+    }
+
+    fn to_from_pose_generic<R: RealField>(epsilon: R) {
+        let zero: R = convert(0.0);
+        let one: R = convert(1.0);
+
+        let e1 = ExtrinsicParameters::<R>::from_view(
+            &Vector3::new(c(1.2), c(3.4), c(5.6)), // camcenter
+            &Vector3::new(c(2.2), c(3.4), c(5.6)), // lookat
+            &nalgebra::Unit::new_normalize(Vector3::new(zero.clone(), zero.clone(), one.clone())), // up
+        );
+        let pose1 = e1.pose();
+        let e2 = ExtrinsicParameters::<R>::from_pose(pose1);
+
+        approx::assert_abs_diff_eq!(e1.rotation(), e2.rotation(), epsilon = epsilon.clone());
+        approx::assert_abs_diff_eq!(e1.camcenter(), e2.camcenter(), epsilon = epsilon.clone());
+    }
 
     #[test]
     fn roundtrip_f64() {
