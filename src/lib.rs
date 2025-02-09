@@ -16,7 +16,7 @@
 //!     0.0, 1.0, 0.0, // point 2
 //! ));
 //!
-//! // perepective parameters - focal length of 100, no skew, pixel center at (640,480)
+//! // perspective parameters - focal length of 100, no skew, pixel center at (640,480)
 //! let intrinsics = IntrinsicParametersPerspective::from(PerspectiveParams {
 //!     fx: 100.0,
 //!     fy: 100.0,
