@@ -90,19 +90,6 @@ impl<R: RealField> ExtrinsicParameters<R> {
             pose_inv,
         };
 
-        // TODO: ensure that our rotation is right handed. The commented out
-        // code below is not robust enough. For example, the following code
-        // would cause it to panic:
-        //
-        //     let camcenter = Vector3::new(10.0, 0.0, 10.0);
-        //     let lookat = Vector3::new(0.0, 0.0, 0.0);
-        //     let up = Unit::new_normalize(Vector3::new(0.0, 0.0, 1.0));
-        //     ExtrinsicParameters::from_view(&camcenter, &lookat, &up);
-
-        // if !crate::camera::is_right_handed_rotation_quat(&rotation) {
-        //     panic!("rotation is not right handed.");
-        // }
-
         Self {
             rquat: rotation,
             camcenter,
@@ -389,7 +376,7 @@ fn _test_extrinsics_is_deserialize() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use nalgebra::convert as c;
+    use nalgebra::{convert as c, UnitVector3};
 
     #[test]
     fn to_from_pose_f64() {
@@ -475,5 +462,22 @@ mod tests {
         let buf = serde_json::to_string(&expected).unwrap();
         let actual: crate::ExtrinsicParameters<f64> = serde_json::from_str(&buf).unwrap();
         assert!(expected == actual);
+    }
+
+    #[test]
+    fn test_from_view() {
+        // These values had previously cause problems.
+        let camcenter = Vector3::new(10.0, 0.0, 10.0);
+        let lookat = Vector3::new(0.0, 0.0, 0.0);
+        let up = Unit::new_normalize(Vector3::new(0.0, 0.0, 1.0));
+        let e = ExtrinsicParameters::from_view(&camcenter, &lookat, &up);
+        let axis = UnitVector3::new_normalize(Vector3::new(
+            0.6785983445458471,
+            0.6785983445458469,
+            -0.28108463771482023,
+        ));
+        let expected_rot = UnitQuaternion::from_axis_angle(&axis, 2.5935642459694805);
+        approx::assert_abs_diff_eq!(camcenter, e.camcenter().coords);
+        approx::assert_abs_diff_eq!(expected_rot, e.pose().rotation);
     }
 }

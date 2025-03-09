@@ -248,7 +248,10 @@ fn rq<R: RealField>(A: Matrix3<R>) -> (Matrix3<R>, Matrix3<R>) {
 fn rq_decomposition<R: RealField>(
     orig: Matrix3<R>,
 ) -> Result<(UnitQuaternion<R>, Matrix3<R>), Error> {
+    // Perform RQ decomposition to separate intrinsic matrix from orthonormal rotation matrix.
     let (mut intrin, mut q) = rq(orig);
+
+    // Flip signs so that diagonal of intrinsic matrix is positive.
     let zero: R = convert(0.0);
     for i in 0..3 {
         if intrin[(i, i)] < zero {
@@ -259,47 +262,25 @@ fn rq_decomposition<R: RealField>(
         }
     }
 
-    match right_handed_rotation_quat_new(&q) {
-        Ok(rquat) => Ok((rquat, intrin)),
-        Err(error) => {
-            match error {
-                Error::InvalidRotationMatrix => {
-                    // convert left-handed rotation to right-handed rotation
-                    let q = -q;
-                    let intrin = -intrin;
-                    let rquat = right_handed_rotation_quat_new(&q)?;
-                    Ok((rquat, intrin))
-                }
-                e => Err(e),
-            }
-        }
-    }
-}
+    // Now we could have either a pure rotation matrix in q or an improper
+    // rotation matrix. Excluding numerical issues, the determinant will be 1 or
+    // -1, respectively. To do deal with potential numerical issues, we pick the
+    // matrix with the largest determinant.
 
-/// convert a 3x3 matrix into a valid right-handed rotation
-fn right_handed_rotation_quat_new<R: RealField>(
-    orig: &Matrix3<R>,
-) -> Result<UnitQuaternion<R>, Error> {
-    let r1 = orig.clone();
-    let rotmat = Rotation3::from_matrix_unchecked(r1);
-    let rquat = UnitQuaternion::from_rotation_matrix(&rotmat);
-    if !is_right_handed_rotation_quat(&rquat) {
-        return Err(Error::InvalidRotationMatrix);
-    }
-    Ok(rquat)
-}
+    let r1 = q.clone(); // option 1
+    let r2 = -q; // option 1
 
-/// Check for valid right-handed rotation.
-///
-/// Converts quaternion to rotation matrix and back again to quat then comparing
-/// quats. Probably there is a much faster and better way.
-pub(crate) fn is_right_handed_rotation_quat<R: RealField>(rquat: &UnitQuaternion<R>) -> bool {
-    let rotmat2 = rquat.clone().to_rotation_matrix();
-    let rquat2 = UnitQuaternion::from_rotation_matrix(&rotmat2);
-    let delta = rquat.rotation_to(&rquat2);
-    let angle = my_quat_angle(&delta);
-    let epsilon = R::default_epsilon() * convert(1e5);
-    angle.abs() <= epsilon
+    if r1.determinant() > r2.determinant() {
+        let intrin1 = intrin.clone();
+        let rotmat1 = Rotation3::from_matrix_unchecked(r1);
+        let rquat1 = UnitQuaternion::from_rotation_matrix(&rotmat1);
+        Ok((rquat1, intrin1))
+    } else {
+        let intrin2 = -intrin;
+        let rotmat2 = Rotation3::from_matrix_unchecked(r2);
+        let rquat2 = UnitQuaternion::from_rotation_matrix(&rotmat2);
+        Ok((rquat2, intrin2))
+    }
 }
 
 /// get the camera center from a 3x4 camera projection matrix
@@ -314,21 +295,6 @@ where
     let z = p.clone().remove_column(2).determinant();
     let w = -p.clone().remove_column(3).determinant();
     Point3::from(Vector3::new(x / w.clone(), y / w.clone(), z / w))
-}
-
-// Calculate angle of quaternion
-///
-/// This is the implementation from prior to
-/// https://github.com/rustsim/nalgebra/commit/74aefd9c23dadd12ee654c7d0206b0a96d22040c
-fn my_quat_angle<R: RealField>(quat: &nalgebra::UnitQuaternion<R>) -> R {
-    let w = quat.quaternion().scalar().abs();
-
-    // Handle inaccuracies that make break `.acos`.
-    if w >= R::one() {
-        R::zero()
-    } else {
-        w.acos() * convert(2.0f64)
-    }
 }
 
 #[cfg(test)]
