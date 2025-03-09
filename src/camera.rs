@@ -264,14 +264,14 @@ fn rq_decomposition<R: RealField>(
 
     // Now we could have either a pure rotation matrix in q or an improper
     // rotation matrix. Excluding numerical issues, the determinant will be 1 or
-    // -1, respectively. To do deal with potential numerical issues, we pick the
+    // -1, respectively. To deal with potential numerical issues, we pick the
     // matrix with the largest determinant.
 
     let r1 = q.clone(); // option 1
-    let r2 = -q; // option 1
+    let r2 = -q; // option 2
 
     if r1.determinant() > r2.determinant() {
-        let intrin1 = intrin.clone();
+        let intrin1 = intrin;
         let rotmat1 = Rotation3::from_matrix_unchecked(r1);
         let rquat1 = UnitQuaternion::from_rotation_matrix(&rotmat1);
         Ok((rquat1, intrin1))
