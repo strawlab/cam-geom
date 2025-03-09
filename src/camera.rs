@@ -328,4 +328,44 @@ mod tests {
         let actual: Camera<_, _> = serde_json::from_str(&buf).unwrap();
         assert!(expected == actual);
     }
+
+    #[test]
+    fn test_rotation_rh() {
+        use super::Camera;
+
+        // Reproduces https://github.com/strawlab/cam-geom/issues/17
+        let image_points = [
+            [102.92784, 141.48114],
+            [250.00058, 141.4969],
+            [397.07214, 141.48114],
+            [141.12552, 247.49763],
+            [250.0, 247.50888],
+            [358.8746, 247.4984],
+            [163.47325, 309.60333],
+            [250.0, 309.61908],
+            [336.52673, 309.60333],
+        ];
+        let object_points = [
+            [140., 140., 0.],
+            [500., 140., 0.],
+            [860., 140., 0.],
+            [140., 500., 0.],
+            [500., 500., 0.],
+            [860., 500., 0.],
+            [140., 860., 0.],
+            [500., 860., 0.],
+            [860., 860., 0.],
+        ];
+        let corresponding_points = std::iter::zip(image_points, object_points)
+            .map(|(image_point, object_point)| dlt::CorrespondingPoint {
+                object_point,
+                image_point,
+            })
+            .collect::<Vec<_>>();
+        let pmat = dlt::dlt_corresponding(&corresponding_points, 1e-10).unwrap();
+        let cam_f32 = Camera::from_perspective_matrix(&pmat.cast::<f32>()).unwrap();
+        println!("cam_f32 = {cam_f32:?}");
+        let cam_f64 = Camera::from_perspective_matrix(&pmat).unwrap();
+        println!("cam_f64 = {cam_f64:?}");
+    }
 }
