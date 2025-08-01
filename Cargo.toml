@@ -18,7 +18,7 @@ categories = [
 rust-version = "1.65"
 
 [dependencies]
-nalgebra = { version = "0.33", default-features = false, features = ["libm"] }
+nalgebra = { version = "0.34", default-features = false, features = ["libm"] }
 approx = { version = "0.5", default-features = false }
 num-iter = { version = "0.1.40", default-features = false, optional = true }
 itertools = { version = "0.14", default-features = false }
