@@ -332,40 +332,38 @@ mod tests {
     #[test]
     fn test_rotation_rh() {
         use super::Camera;
+        use nalgebra::{SMatrix, Vector3};
 
         // Reproduces https://github.com/strawlab/cam-geom/issues/17
-        let image_points = [
-            [102.92784, 141.48114],
-            [250.00058, 141.4969],
-            [397.07214, 141.48114],
-            [141.12552, 247.49763],
-            [250.0, 247.50888],
-            [358.8746, 247.4984],
-            [163.47325, 309.60333],
-            [250.0, 309.61908],
-            [336.52673, 309.60333],
-        ];
-        let object_points = [
-            [140., 140., 0.],
-            [500., 140., 0.],
-            [860., 140., 0.],
-            [140., 500., 0.],
-            [500., 500., 0.],
-            [860., 500., 0.],
-            [140., 860., 0.],
-            [500., 860., 0.],
-            [860., 860., 0.],
-        ];
-        let corresponding_points = std::iter::zip(image_points, object_points)
-            .map(|(image_point, object_point)| dlt::CorrespondingPoint {
-                object_point,
-                image_point,
-            })
-            .collect::<Vec<_>>();
-        let pmat = dlt::dlt_corresponding(&corresponding_points, 1e-10).unwrap();
+        // This projection matrix was generated from the issue's point
+        // correspondences with DLT. Keep it as a fixture so this unit test is
+        // independent of the DLT implementation and its nalgebra version.
+        let pmat = SMatrix::<f64, 3, 4>::from_columns(&[
+            Vector3::new(
+                0.4731737477419794,
+                -6.400815274962279e-7,
+                -5.2546378466401984e-9,
+            ),
+            Vector3::new(
+                0.28197935156546444,
+                0.6195876966081434,
+                0.001127918110228558,
+            ),
+            Vector3::new(3.3499399670973224e-10, 1.9209969003311862e-14, 0.0),
+            Vector3::new(13.412495561949811, 77.15338721493606, 1.0),
+        ]);
         let cam_f32 = Camera::from_perspective_matrix(&pmat.cast::<f32>()).unwrap();
-        println!("cam_f32 = {cam_f32:?}");
         let cam_f64 = Camera::from_perspective_matrix(&pmat).unwrap();
-        println!("cam_f64 = {cam_f64:?}");
+
+        approx::assert_relative_eq!(
+            cam_f32.extrinsics().rotation().matrix().determinant(),
+            1.0,
+            epsilon = 1e-6
+        );
+        approx::assert_relative_eq!(
+            cam_f64.extrinsics().rotation().matrix().determinant(),
+            1.0,
+            epsilon = 1e-12
+        );
     }
 }
