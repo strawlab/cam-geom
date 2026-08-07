@@ -26,7 +26,8 @@ PR publishes the crate to crates.io, creates a version tag, and creates a GitHub
 release. Do not edit package versions or released changelog entries by hand.
 
 Configure crate `cam-geom` on crates.io with a trusted publisher for repository
-`strawlab/cam-geom` and workflow `release-plz.yml`. In the repository's Actions
+`strawlab/cam-geom`, workflow `release-plz.yml`, and environment `release`. Restrict
+the GitHub `release` environment to the `main` branch. In the repository's Actions
 settings, allow GitHub Actions to create pull requests. A repository secret named
 `RELEASE_PLZ_TOKEN` is optional; configure it as a fine-grained GitHub token with
 Contents and Pull requests write access if CI should run automatically on the
