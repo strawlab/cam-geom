@@ -1,6 +1,6 @@
 [package]
 name = "cam-geom"
-version = "0.16.0"
+version = "0.17.0"
 authors = ["Andrew Straw <strawman@astraw.com>"]
 edition = "2021"
 description = "Geometric models of cameras for photogrammetry"
